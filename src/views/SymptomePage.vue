@@ -9,6 +9,17 @@
     <ion-content class="auth-content">
       <div class="auth-wrapper">
         <div class="form-container">
+          <div class="input-group">
+            <label>Partie plante numero</label>
+            <div class="input-wrapper">
+              <ion-input
+                type="number"
+                v-model.number="symptome.ID_PartiePlante"
+                placeholder="Numero de la partie plante"
+              ></ion-input>
+            </div>
+          </div>
+
           <div class="form-header">
             <h2>Symptômes observés</h2>
             <p>Cochez tous les symptômes constatés</p>
@@ -26,17 +37,6 @@
               <ion-label>{{ symptom.label }}</ion-label>
             </ion-item>
           </ion-list>
-
-          <div class="input-group">
-            <label>Partie plante numero</label>
-            <div class="input-wrapper">
-              <ion-input
-                type="number"
-                v-model.number="symptome.ID_PartiePlante"
-                placeholder="Numero de la partie plante"
-              ></ion-input>
-            </div>
-          </div>
 
           <!-- Bouton unique -->
           <ion-button
@@ -93,11 +93,29 @@ export default defineComponent({
     });
 
     const symptomesList = [
+      { value: 'Egratignure', label: 'Egratignure' },
+      { value: 'Coupe', label: 'Coupe' },
       { value: 'Jaunissement', label: 'Jaunissement' },
       { value: 'Flétrissement', label: 'Flétrissement' },
-      { value: 'Tâches', label: 'Tâches' },
+      { value: 'Enroulement', label: 'Enroulement' },
+      { value: 'Déformation', label: 'Déformation' },
+      { value: 'Perforation', label: 'Perforation' },
+      { value: 'Tâche', label: 'Tâche' },
+      { value: 'Présence de mines', label: 'Présence de mines' },
+      { value: 'Présence de galeries', label: 'Présence de galeries' },
+      { value: 'Mosaïque', label: 'Mosaïque' },
+      { value: 'Lésion', label: 'Lésion' },
+      { value: 'Craquelure', label: 'Craquelure' },
+      { value: 'Chancre', label: 'Chancre' },
       { value: 'Nécrose', label: 'Nécrose' },
-      // Ajouter tous les autres symptômes ici
+      { value: 'Déperissement', label: 'Déperissement' },
+      { value: 'Dessèchement', label: 'Dessèchement' },
+      { value: 'Pourriture', label: 'Pourriture' },
+      { value: 'Pourriture du coeur', label: 'Pourriture du coeur' },
+      { value: 'Moisissures', label: 'Moisissure' },
+      { value: 'Trous', label: 'Trous' },
+      { value: 'Rongé', label: 'Rongé' },
+      { value: 'Autres', label: 'Autres' },
     ];
 
     const toggleSymptom = (symptom: string) => {

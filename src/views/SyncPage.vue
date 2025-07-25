@@ -50,6 +50,9 @@
         >
           <ion-icon :icon="isSyncing ? syncOutline : cloudUpload"></ion-icon>
         </ion-fab-button>
+        <ion-label style="margin-right: 10px; color: #1b1c1d; font-weight: bold"
+          >Envoyer</ion-label
+        >
       </ion-fab>
     </ion-content>
   </ion-page>

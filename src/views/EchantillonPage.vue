@@ -72,6 +72,7 @@
                   <ion-select-option value="Insectes"
                     >Insectes</ion-select-option
                   >
+                  <ion-select-option value="Insectes">Autres</ion-select-option>
                 </ion-select>
               </div>
             </div>
@@ -212,7 +213,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-/* Styles identiques à la version précédente */
 .header-toolbar {
   --background: #4a5568;
   --color: white;

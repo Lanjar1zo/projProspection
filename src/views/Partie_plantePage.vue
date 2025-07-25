@@ -9,6 +9,17 @@
     <ion-content class="auth-content">
       <div class="auth-wrapper">
         <div class="form-container">
+          <div class="input-group">
+            <label>Plante attaqué numero</label>
+            <div class="input-wrapper">
+              <ion-input
+                type="number"
+                v-model.number="partiePlante.ID_PlanteAttaque"
+                placeholder="Numero du plante attaqué"
+              ></ion-input>
+            </div>
+          </div>
+
           <div class="form-header">
             <h2>Parties affectées</h2>
             <p>Sélectionnez les parties de la plante attaquées</p>
@@ -27,17 +38,6 @@
             </ion-item>
           </ion-list>
 
-          <div class="input-group">
-            <label>Plante attaqué numero</label>
-            <div class="input-wrapper">
-              <ion-input
-                type="number"
-                v-model.number="partiePlante.ID_PlanteAttaque"
-                placeholder="Numero du plante attaqué"
-              ></ion-input>
-            </div>
-          </div>
-          
           <!-- Bouton unique -->
           <ion-button
             expand="block"
