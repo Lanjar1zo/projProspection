@@ -2,6 +2,15 @@
   <ion-page>
     <ion-header>
       <ion-toolbar class="header-toolbar">
+        <ion-buttons slot="start">
+          <ion-button @click="goToPartiePlante">
+            <ion-icon
+              slot="icon-only"
+              :icon="arrowBack"
+              color="light"
+            ></ion-icon>
+          </ion-button>
+        </ion-buttons>
         <ion-title>Description des Symptômes</ion-title>
       </ion-toolbar>
     </ion-header>
@@ -9,7 +18,7 @@
     <ion-content class="auth-content">
       <div class="auth-wrapper">
         <div class="form-container">
-          <div class="input-group">
+          <!-- <div class="input-group">
             <label>Partie plante numero</label>
             <div class="input-wrapper">
               <ion-input
@@ -18,7 +27,9 @@
                 placeholder="Numero de la partie plante"
               ></ion-input>
             </div>
-          </div>
+          </div> -->
+
+          <input type="hidden" v-model="symptome.ID_PartiePlante" />
 
           <div class="form-header">
             <h2>Symptômes observés</h2>
@@ -54,7 +65,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import {
   IonPage,
   IonHeader,
@@ -70,6 +81,7 @@ import {
 } from '@ionic/vue';
 import Symptome from '@/Classes/Symptome';
 import { ISymptome } from '@/Interfaces/ISymptome';
+import { arrowBack } from 'ionicons/icons';
 
 export default defineComponent({
   name: 'SymptomePage',
@@ -86,11 +98,16 @@ export default defineComponent({
     IonButton,
   },
   setup() {
+    const route = useRoute();
     const router = useRouter();
     const symptome = reactive<ISymptome>({
       description: [] as string[],
-      ID_PartiePlante: 0,
+      ID_PartiePlante: parseInt(route.query.ID_PartiePlante as string) || 0,
     });
+
+    const goToPartiePlante = () => {
+      router.push('/partie-plante');
+    };
 
     const symptomesList = [
       { value: 'Egratignure', label: 'Egratignure' },
@@ -160,6 +177,8 @@ export default defineComponent({
       symptomesList,
       toggleSymptom,
       validateAndContinue,
+      goToPartiePlante,
+      arrowBack,
     };
   },
 });

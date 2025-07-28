@@ -2,6 +2,15 @@
   <ion-page>
     <ion-header>
       <ion-toolbar class="header-toolbar">
+        <ion-buttons slot="start">
+          <ion-button @click="goTo">
+            <ion-icon
+              slot="icon-only"
+              :icon="arrowBack"
+              color="light"
+            ></ion-icon>
+          </ion-button>
+        </ion-buttons>
         <ion-title>Formulaire Producteur</ion-title>
       </ion-toolbar>
     </ion-header>
@@ -130,6 +139,7 @@ import {
   toastController,
 } from '@ionic/vue';
 import Producteur from '@/Classes/Producteur';
+import { arrowBack } from 'ionicons/icons';
 
 interface IProducteur {
   nomProd: string;
@@ -197,7 +207,10 @@ export default defineComponent({
           if (result) {
             console.log('Partie plante créée avec ID:', result);
             await showToast('Enregistrement réussi');
-            router.push('/champs');
+            router.push({
+              path: '/champs',
+              query: {ID_Producteur: result.toString() }
+            });
           } else {
             throw new Error('Echec de la création.');
           }
@@ -209,9 +222,15 @@ export default defineComponent({
       router.push('/champs');
     };
 
+    const goTo = () => {
+      router.replace('/prospection');
+    };
+
     return {
       producteur,
       validateAndContinue,
+      goTo,
+      arrowBack
     };
   },
 });

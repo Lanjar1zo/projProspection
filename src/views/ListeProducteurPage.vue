@@ -2,6 +2,15 @@
   <ion-page>
     <ion-header>
       <ion-toolbar class="header-toolbar">
+        <ion-buttons slot="start">
+          <ion-button @click="goTo">
+            <ion-icon
+              slot="icon-only"
+              :icon="arrowBack"
+              color="light"
+            ></ion-icon>
+          </ion-button>
+        </ion-buttons>
         <ion-title>Liste des Producteurs</ion-title>
       </ion-toolbar>
     </ion-header>
@@ -60,7 +69,7 @@ import {
   IonSearchbar,
   IonIcon,
 } from '@ionic/vue';
-import { alertCircleOutline } from 'ionicons/icons';
+import { alertCircleOutline, arrowBack } from 'ionicons/icons';
 import Producteur from '@/Classes/Producteur';
 import IProducteur from '@/Interfaces/IProducteur';
 
@@ -114,7 +123,13 @@ export default defineComponent({
       router.push(`/producteurs/${producteur.ID_Producteur}`);
     };
 
+    const goTo = () => {
+      router.replace('/accueil');
+    };
+
     return {
+      goTo,
+      arrowBack,
       alertCircleOutline,
       producteurs,
       filteredProducteurs,

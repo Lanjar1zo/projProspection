@@ -2,95 +2,113 @@
   <ion-page>
     <ion-header>
       <ion-toolbar class="header-toolbar">
-        <ion-title>FORMULAIRE D'INSCRIPTION</ion-title>
+        <ion-buttons slot="start">
+          <ion-button @click="goToLogin">
+            <ion-icon
+              slot="icon-only"
+              :icon="arrowBack"
+              color="light"
+            ></ion-icon>
+          </ion-button>
+        </ion-buttons>
+        <ion-title>Formulaire Prospecteur</ion-title>
       </ion-toolbar>
     </ion-header>
 
-    <ion-content class="form-content">
-      <div class="form-wrapper">
-        <form @submit.prevent="handleSubmit">
-          <!-- Nom -->
-          <div class="input-group">
-            <label>Nom</label>
-            <div class="input-wrapper">
-              <ion-input
-                v-model="prospecteur.nomProspecteur"
-                required
-                type="text"
-              ></ion-input>
+    <ion-content class="auth-content">
+      <div class="auth-wrapper">
+        <div class="form-container">
+          <div class="form-header">
+            <h2>Informations du prospecteur</h2>
+            <p>Renseignez les détails du prospecteur</p>
+          </div>
+
+          <ion-list class="custom-list">
+            <!-- Nom -->
+            <div class="input-group">
+              <label>Nom</label>
+              <div class="input-wrapper">
+                <ion-input
+                  v-model="prospecteur.nomProspecteur"
+                  placeholder="Entrez le nom"
+                  required
+                ></ion-input>
+              </div>
             </div>
-          </div>
 
-          <!-- Prénom -->
-          <div class="input-group">
-            <label>Prénom</label>
-            <div class="input-wrapper">
-              <ion-input
-                v-model="prospecteur.prenProspecteur"
-                required
-                type="text"
-              ></ion-input>
+            <!-- Prénom -->
+            <div class="input-group">
+              <label>Prénom</label>
+              <div class="input-wrapper">
+                <ion-input
+                  v-model="prospecteur.prenProspecteur"
+                  placeholder="Entrez le prénom"
+                  required
+                ></ion-input>
+              </div>
             </div>
-          </div>
 
-          <!-- Fonction -->
-          <div class="input-group">
-            <label>Fonction</label>
-            <div class="input-wrapper">
-              <ion-input
-                v-model="prospecteur.fonction"
-                required
-                type="text"
-              ></ion-input>
+            <!-- Fonction -->
+            <div class="input-group">
+              <label>Fonction</label>
+              <div class="input-wrapper">
+                <ion-input
+                  v-model="prospecteur.fonction"
+                  placeholder="Fonction du prospecteur"
+                  required
+                ></ion-input>
+              </div>
             </div>
-          </div>
 
-          <!-- Email -->
-          <div class="input-group">
-            <label>Email</label>
-            <div class="input-wrapper">
-              <ion-input
-                v-model="prospecteur.email"
-                required
-                type="email"
-              ></ion-input>
+            <!-- Email -->
+            <div class="input-group">
+              <label>Email</label>
+              <div class="input-wrapper">
+                <ion-input
+                  v-model="prospecteur.email"
+                  type="email"
+                  placeholder="Adresse email"
+                  required
+                ></ion-input>
+              </div>
             </div>
-          </div>
 
-          <!-- Téléphone -->
-          <div class="input-group">
-            <label>Téléphone</label>
-            <div class="input-wrapper">
-              <ion-input
-                v-model="prospecteur.tel"
-                required
-                type="tel"
-              ></ion-input>
+            <!-- Téléphone -->
+            <div class="input-group">
+              <label>Téléphone</label>
+              <div class="input-wrapper">
+                <ion-input
+                  v-model="prospecteur.tel"
+                  type="tel"
+                  placeholder="Numéro de téléphone"
+                  required
+                ></ion-input>
+              </div>
             </div>
-          </div>
 
-          <!-- Mot de passe -->
-          <div class="input-group">
-            <label>Mot de passe</label>
-            <div class="input-wrapper">
-              <ion-input
-                v-model="prospecteur.password"
-                required
-                type="password"
-              ></ion-input>
+            <!-- Mot de passe -->
+            <div class="input-group">
+              <label>Mot de passe</label>
+              <div class="input-wrapper">
+                <ion-input
+                  v-model="prospecteur.password"
+                  type="password"
+                  placeholder="............"
+                  required
+                ></ion-input>
+              </div>
             </div>
-          </div>
+          </ion-list>
 
-          <div class="button-row">
-            <ion-button fill="outline" class="cancel-btn" @click="goToLogin">
-              Annuler
-            </ion-button>
-
-            <ion-button type="submit" class="validate-btn">
-              Valider
-            </ion-button>
-          </div>
-        </form>
+          <!-- Bouton de validation -->
+          <ion-button
+            expand="block"
+            class="submit-btn"
+            @click="validateAndContinue"
+          >
+            Valider
+          </ion-button>
+        </div>
       </div>
     </ion-content>
   </ion-page>
@@ -105,10 +123,13 @@ import {
   IonToolbar,
   IonTitle,
   IonContent,
+  IonList,
   IonInput,
   IonButton,
+  toastController,
 } from '@ionic/vue';
 import Prospecteur from '@/Classes/Prospecteur';
+import { arrowBack } from 'ionicons/icons';
 
 export default defineComponent({
   name: 'ProspecteurPage',
@@ -118,6 +139,7 @@ export default defineComponent({
     IonToolbar,
     IonTitle,
     IonContent,
+    IonList,
     IonInput,
     IonButton,
   },
@@ -132,19 +154,45 @@ export default defineComponent({
       password: '',
     });
 
-    const handleSubmit = async () => {
+    const showToast = async (message: string, color: string = 'success') => {
+      const toast = await toastController.create({
+        message,
+        duration: 3000,
+        color,
+        position: 'top',
+      });
+      await toast.present();
+    };
+
+    const validateAndContinue = async () => {
       try {
+        if (
+          !prospecteur.nomProspecteur ||
+          !prospecteur.prenProspecteur ||
+          !prospecteur.fonction ||
+          !prospecteur.email ||
+          !prospecteur.tel ||
+          !prospecteur.password
+        ) {
+          console.error('Veuillez remplir tous les champs obligatoires');
+          return;
+        }
+
         const prospecteurService = new Prospecteur();
         const result = await prospecteurService.create(prospecteur);
 
         if (result) {
-          console.log('Prospecteur créé avec succès, ID:', result);
-          router.push('/prospection');
+          await showToast('Enregistrement réussi');
+          router.push({
+            path: '/prospection',
+            query: { ID_Prospecteur: result.toString() },
+          });
         } else {
-          console.error('Échec de la création du prospecteur');
+          throw new Error('Échec de la création');
         }
       } catch (error) {
-        console.error('Erreur lors de la création du prospecteur:', error);
+        console.error('Erreur:', error);
+        await showToast("Erreur lors de l'enregistrement", 'danger');
       }
     };
 
@@ -154,8 +202,9 @@ export default defineComponent({
 
     return {
       prospecteur,
-      handleSubmit,
+      validateAndContinue,
       goToLogin,
+      arrowBack,
     };
   },
 });
@@ -167,29 +216,54 @@ export default defineComponent({
   --color: white;
 }
 
-.form-content {
-  --background: #f8f9fa;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding-top: 20px;
-  min-height: calc(100vh - 72px);
+.auth-content {
+  --background: #ffffff;
 }
 
-.form-wrapper {
-  width: 100%;
-  max-width: 600px;
+.auth-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100%;
   padding: 20px;
 }
 
+.form-container {
+  width: 100%;
+  max-width: 500px;
+  padding: 20px;
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.form-header h2 {
+  color: #2d3748;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.form-header p {
+  color: #718096;
+  font-size: 0.9rem;
+}
+
+.custom-list {
+  background: transparent;
+  padding: 0;
+}
+
 .input-group {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .input-group label {
   display: block;
   color: #4a5568;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 500;
   margin-bottom: 8px;
 }
@@ -211,34 +285,19 @@ export default defineComponent({
   --color: #1a202c;
 }
 
-.button-row {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-  margin-top: 32px;
-  padding: 0 16px;
-}
-
-.validate-btn {
+.submit-btn {
   --background: #38a169;
   --background-activated: #2f855a;
   --background-hover: #2f855a;
   --color: white;
-  --border-radius: 8px;
-  flex: 1;
-  max-width: 200px;
+  --border-radius: 6px;
   height: 48px;
   font-weight: 500;
+  margin-top: 30px;
 }
 
-.cancel-btn {
-  --color: #4a5568;
-  --border-color: #cbd5e0;
-  --color-activated: #2d3748;
-  --border-radius: 8px;
-  flex: 1;
-  max-width: 200px;
-  height: 48px;
-  font-weight: 500;
+.submit-btn:hover {
+  transform: translateY(-2px);
+  transition: transform 0.2s ease;
 }
 </style>

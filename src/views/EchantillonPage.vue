@@ -2,6 +2,15 @@
   <ion-page>
     <ion-header>
       <ion-toolbar class="header-toolbar">
+        <ion-buttons slot="start">
+          <ion-button @click="goTo">
+            <ion-icon
+              slot="icon-only"
+              :icon="arrowBack"
+              color="light"
+            ></ion-icon>
+          </ion-button>
+        </ion-buttons>
         <ion-title>Prélèvement d'Échantillons</ion-title>
       </ion-toolbar>
     </ion-header>
@@ -77,7 +86,7 @@
               </div>
             </div>
 
-            <div class="input-group">
+            <!-- <div class="input-group">
               <label>Prospection numero</label>
               <div class="input-wrapper">
                 <ion-input
@@ -86,7 +95,9 @@
                   placeholder="Numero du prospection"
                 ></ion-input>
               </div>
-            </div>
+            </div> -->
+
+            <input type="hidden" v-model="echantillon.ID_Prospection" />
           </ion-list>
 
           <!-- Boutons d'action -->
@@ -105,7 +116,7 @@
               class="submit-btn"
               @click="validateAndContinue"
             >
-              Valider et continuer
+              Valider
             </ion-button>
           </div>
         </div>
@@ -116,7 +127,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import {
   IonPage,
   IonHeader,
@@ -132,6 +143,7 @@ import {
 } from '@ionic/vue';
 import { IEchantillon } from '@/Interfaces/IEchantillon';
 import Echantillon from '@/Classes/Echantillon';
+import { arrowBack } from 'ionicons/icons';
 
 export default defineComponent({
   name: 'EchantillonPage',
@@ -148,6 +160,7 @@ export default defineComponent({
     IonButton,
   },
   setup() {
+    const route = useRoute();
     const router = useRouter();
     const echantillonService = new Echantillon();
     const echantillon = reactive<IEchantillon>({
@@ -155,8 +168,12 @@ export default defineComponent({
       poids: 0,
       nbrEchantillon: 0,
       analyseAFaire: '',
-      ID_Prospection: 0,
+      ID_Prospection: parseInt(route.query.ID_Prospection as string) || 0,
     });
+
+    const goTo = () => {
+      router.push('/symptome');
+    };
 
     const showSuccessToast = async () => {
       const toast = await toastController.create({
@@ -207,6 +224,8 @@ export default defineComponent({
       echantillon,
       validateAndContinue,
       skipEchantillon,
+      goTo,
+      arrowBack,
     };
   },
 });

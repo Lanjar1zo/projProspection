@@ -2,6 +2,15 @@
   <ion-page>
     <ion-header>
       <ion-toolbar class="header-toolbar">
+        <ion-buttons slot="start">
+          <ion-button @click="goTo">
+            <ion-icon
+              slot="icon-only"
+              :icon="arrowBack"
+              color="light"
+            ></ion-icon>
+          </ion-button>
+        </ion-buttons>
         <ion-title>Nouvelle Prospection</ion-title>
       </ion-toolbar>
     </ion-header>
@@ -11,24 +20,22 @@
         <div class="form-container">
           <div class="form-header">
             <h2>Nouvelle prospection</h2>
-            <p>Sélectionnez le prospecteur et la date</p>
+            <p>Sélectionnez la date</p>
           </div>
 
-          <!-- Champ Prospecteur -->
+          <!-- Champ Prospecteur 
           <div class="input-group">
             <label>Prospecteur</label>
             <div class="input-wrapper">
-              <ion-select
-                placeholder="Choisir un prospecteur"
-                interface="action-sheet"
-              >
-                <ion-select-option value="1">Prospecteur 1</ion-select-option>
-                <ion-select-option value="2">Prospecteur 2</ion-select-option>
-              </ion-select>
+              <ion-input
+                :value="prospection.ID_Prospecteur"
+                readonly
+              ></ion-input>
             </div>
-          </div>
+          </div> -->
 
-          <!-- Calendrier amélioré -->
+          <input type="hidden" v-model="prospection.ID_Prospecteur" />
+
           <div class="input-group">
             <label>Date du prospection</label>
             <div class="calendar-wrapper">
@@ -41,7 +48,6 @@
             </div>
           </div>
 
-          <!-- Bouton modifié -->
           <ion-button
             expand="block"
             class="submit-btn"
@@ -58,20 +64,18 @@
 
 <script lang="ts">
 import { defineComponent, reactive } from 'vue';
-import { calendar } from 'ionicons/icons';
+import { arrowBack, calendar } from 'ionicons/icons';
 import {
   IonPage,
   IonHeader,
   IonToolbar,
   IonTitle,
   IonContent,
-  IonSelect,
-  IonSelectOption,
   IonDatetime,
   IonButton,
   toastController,
 } from '@ionic/vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { IProspection } from '@/Interfaces/IProspection';
 import Prospection from '@/Classes/Prospection';
 
@@ -83,15 +87,15 @@ export default defineComponent({
     IonToolbar,
     IonTitle,
     IonContent,
-    IonSelect,
-    IonSelectOption,
     IonDatetime,
     IonButton,
   },
   setup() {
+    const route = useRoute();
+
     const router = useRouter();
     const prospection = reactive<IProspection>({
-      ID_Prospecteur: 0,
+      ID_Prospecteur: parseInt(route.query.ID_Prospecteur as string) || 0,
       date: new Date(),
     });
     const showToast = async (message: string, color: string = 'success') => {
@@ -104,15 +108,22 @@ export default defineComponent({
       await toast.present();
     };
 
+    const goTo = () => {
+      router.push('/accueil');
+    };
+
     const validateAndContinue = async () => {
       try {
         const prospectionService = new Prospection();
         const result = await prospectionService.create(prospection);
 
         if (result) {
-          console.log('Partie plante créée avec ID:', result);
+          console.log('Prospection créée avec ID:', result);
           await showToast('Enregistrement réussi');
-          router.push('/symptome');
+          router.push({
+            path: '/producteur',
+            query: { ID_Prospection: result.toString() },
+          });
         } else {
           throw new Error('Échec de la création');
         }
@@ -126,6 +137,8 @@ export default defineComponent({
       calendar,
       prospection,
       validateAndContinue,
+      goTo,
+      arrowBack,
     };
   },
 });

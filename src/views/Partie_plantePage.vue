@@ -2,6 +2,15 @@
   <ion-page>
     <ion-header>
       <ion-toolbar class="header-toolbar">
+        <ion-buttons slot="start">
+          <ion-button @click="goTo">
+            <ion-icon
+              slot="icon-only"
+              :icon="arrowBack"
+              color="light"
+            ></ion-icon>
+          </ion-button>
+        </ion-buttons>
         <ion-title>Partie Plante Attaquée</ion-title>
       </ion-toolbar>
     </ion-header>
@@ -9,7 +18,7 @@
     <ion-content class="auth-content">
       <div class="auth-wrapper">
         <div class="form-container">
-          <div class="input-group">
+          <!-- <div class="input-group">
             <label>Plante attaqué numero</label>
             <div class="input-wrapper">
               <ion-input
@@ -18,7 +27,7 @@
                 placeholder="Numero du plante attaqué"
               ></ion-input>
             </div>
-          </div>
+          </div> -->
 
           <div class="form-header">
             <h2>Parties affectées</h2>
@@ -38,6 +47,8 @@
             </ion-item>
           </ion-list>
 
+          <input type="hidden" v-model="partiePlante.ID_PlanteAttaque" />
+
           <!-- Bouton unique -->
           <ion-button
             expand="block"
@@ -54,7 +65,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import {
   IonPage,
   IonHeader,
@@ -70,6 +81,7 @@ import {
 } from '@ionic/vue';
 import Partie_plante from '@/Classes/Partie_plante';
 import { IPartie_plante } from '@/Interfaces/IPartie_plante';
+import { arrowBack } from 'ionicons/icons';
 
 export default defineComponent({
   name: 'PartiePlantePage',
@@ -86,10 +98,11 @@ export default defineComponent({
     IonButton,
   },
   setup() {
+    const route = useRoute();
     const router = useRouter();
     const partiePlante = reactive<IPartie_plante>({
       partiePlante: [],
-      ID_PlanteAttaque: 0,
+      ID_PlanteAttaque: parseInt(route.query.ID_PlanteAttaque as string) || 0,
     });
 
     const partiesPlante = [
@@ -136,7 +149,10 @@ export default defineComponent({
         if (result) {
           console.log('Partie plante créée avec ID:', result);
           await showToast('Enregistrement réussi');
-          router.push('/symptome');
+          router.push({
+            path: '/symptome',
+            query: { ID_PartiePlante: result.toString() },
+          });
         } else {
           throw new Error('Échec de la création');
         }
@@ -146,7 +162,13 @@ export default defineComponent({
       }
     };
 
+    const goTo = () => {
+      router.replace('/plante-attaque');
+    };
+
     return {
+      goTo,
+      arrowBack,
       partiePlante,
       partiesPlante,
       isFormValid,

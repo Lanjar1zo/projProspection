@@ -2,6 +2,15 @@
   <ion-page>
     <ion-header>
       <ion-toolbar class="header-toolbar">
+        <ion-buttons slot="start">
+          <ion-button @click="goTo">
+            <ion-icon
+              slot="icon-only"
+              :icon="arrowBack"
+              color="light"
+            ></ion-icon>
+          </ion-button>
+        </ion-buttons>
         <ion-title>Plante Attaquée</ion-title>
       </ion-toolbar>
     </ion-header>
@@ -116,7 +125,7 @@
               </div>
             </div>
 
-            <!-- ID du Champ -->
+            <!-- ID du Champ 
             <div class="input-group">
               <label>ID du Champ</label>
               <div class="input-wrapper">
@@ -127,7 +136,9 @@
                   required
                 ></ion-input>
               </div>
-            </div>
+            </div> -->
+
+            <input type="hidden" v-model="planteAttaque.ID_Champs" />
           </ion-list>
 
           <!-- Bouton unique -->
@@ -147,7 +158,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import {
   IonPage,
   IonHeader,
@@ -158,11 +169,11 @@ import {
   IonLabel,
   IonRange,
   IonButton,
-  IonInput,
   toastController,
 } from '@ionic/vue';
 import { IPlante_attaque } from '@/Interfaces/IPlante_attaque';
 import Plante_attaque from '@/Classes/Plante_attaque';
+import { arrowBack } from 'ionicons/icons';
 
 export default defineComponent({
   name: 'PlanteAttaquePage',
@@ -176,9 +187,10 @@ export default defineComponent({
     IonLabel,
     IonRange,
     IonButton,
-    IonInput,
   },
   setup() {
+    const route = useRoute();
+
     const router = useRouter();
     const planteAttaque = reactive<IPlante_attaque>({
       point1: 0,
@@ -187,7 +199,7 @@ export default defineComponent({
       point4: 0,
       point5: 0,
       tauxInfestation: 0,
-      ID_Champs: 0,
+      ID_Champs: parseInt(route.query.ID_Champs as string) || 0,
     });
 
     const updateTauxInfestation = () => {
@@ -241,7 +253,10 @@ export default defineComponent({
         if (result) {
           console.log('Évaluation créée avec ID:', result);
           await showSuccessToast();
-          router.push('/accueil');
+          router.push({
+            path: '/partie-plante',
+            query: { ID_PlanteAttaque: result.toString() },
+          });
         } else {
           await showErrorToast("Erreur lors de l'enregistrement");
           console.error("Erreur lors de la création de l'évaluation");
@@ -254,11 +269,17 @@ export default defineComponent({
       }
     };
 
+    const goTo = () => {
+      router.replace('/champs');
+    };
+
     return {
       planteAttaque,
       updateTauxInfestation,
       getInfestationClass,
       isFormValid,
+      goTo,
+      arrowBack,
       validateAndContinue,
     };
   },

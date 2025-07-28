@@ -36,15 +36,17 @@ import '@ionic/vue/css/palettes/dark.system.css';
 
 /* Theme variables */
 import './theme/variables.css';
-/*import { DefaultApolloClient } from '@vue/apollo-composable';
-import { apolloClient } from './Apollo/client';*/
+import { DefaultApolloClient } from '@vue/apollo-composable';
+import { apolloClient } from './Apollo/client';
 
 //pwaElements(window);
 customElements.define('jeep-sqlite', JeepSqlite);
 const platform = Capacitor.getPlatform();
 
-const app = createApp(App).use(IonicVue).use(router);
-//.provide(DefaultApolloClient, apolloClient);
+const app = createApp(App)
+  .use(IonicVue)
+  .use(router)
+  .provide(DefaultApolloClient, apolloClient);
 
 // Set the platform as global properties on the app
 app.config.globalProperties.$platform = platform;

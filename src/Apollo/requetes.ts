@@ -30,6 +30,20 @@ export const PROSPECTEUR = gql`
   }
 `;
 
+export const LOGIN = gql`
+  mutation ($email: String!) {
+    prospecteurByEmail(email: $email) {
+      ID_Prospecteur
+      nomProspecteur
+      prenProspecteur
+      fonction
+      email
+      tel
+      password
+    }
+  }
+`;
+
 export const PROSPECTION = gql`
   mutation (
     $ID_Prospection: BigInt!

@@ -2,6 +2,15 @@
   <ion-page>
     <ion-header>
       <ion-toolbar class="header-toolbar">
+        <ion-buttons slot="start">
+          <ion-button @click="goToLogin">
+            <ion-icon
+              slot="icon-only"
+              :icon="arrowBack"
+              color="light"
+            ></ion-icon>
+          </ion-button>
+        </ion-buttons>
         <ion-title>Accueil</ion-title>
       </ion-toolbar>
     </ion-header>
@@ -56,7 +65,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { document, people, sync } from 'ionicons/icons';
+import { arrowBack, document, people, sync } from 'ionicons/icons';
 import {
   IonPage,
   IonHeader,
@@ -98,10 +107,14 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
-    const pendingSync = ref(false); // Changé à false par défaut
+    const pendingSync = ref(false);
 
     const goTo = (routeName: string) => {
       router.push({ name: routeName });
+    };
+
+    const goToLogin = () => {
+      router.replace('/alogin');
     };
 
     return {
@@ -110,6 +123,8 @@ export default defineComponent({
       sync,
       pendingSync,
       goTo,
+      goToLogin,
+      arrowBack,
     };
   },
 });

@@ -184,6 +184,8 @@
                 </div>
               </div>
             </div>
+
+            <input type="hidden" v-model="champs.ID_Producteur" />
           </ion-list>
 
           <!-- Bouton unique -->
@@ -203,7 +205,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, computed, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { location } from 'ionicons/icons';
 import {
   IonPage,
@@ -243,6 +245,7 @@ export default defineComponent({
     IonSpinner,
   },
   setup() {
+    const route = useRoute();
     const router = useRouter();
     const champs = reactive<IChamps>({
       ID_Champs: 0,
@@ -257,7 +260,7 @@ export default defineComponent({
       santeGle: '',
       nomRavageur: '',
       localisation: '',
-      ID_Producteur: 0,
+      ID_Producteur: parseInt(route.query.ID_Producteur as string) || 0,
     });
 
     const locationLoading = ref(false);
@@ -331,7 +334,10 @@ export default defineComponent({
         if (result) {
           console.log('Champ créé avec succès, ID:', result);
           await showSuccessToast();
-          router.push('/plante-attaque');
+          router.push({
+            path: '/plante-attaque',
+            query: { ID_Champs: result.toString() },
+          });
         } else {
           await showErrorToast('Échec de la création du champ');
           console.error('Échec de la création du champ');

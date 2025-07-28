@@ -5,10 +5,12 @@ import {
 } from '@capacitor-community/sqlite';
 
 export class Database {
-  private sqlite = new SQLiteConnection(CapacitorSQLite);
+  private sqlite: SQLiteConnection;
   private db!: SQLiteDBConnection;
 
-  constructor() {}
+  constructor() {
+    this.sqlite = new SQLiteConnection(CapacitorSQLite);
+  }
 
   // Établit la connexion à la base de données
   private async connect(): Promise<void> {
@@ -93,7 +95,8 @@ export class Database {
                       tel TEXT NOT NULL,
                       password TEXT NOT NULL,
                       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                      is_Sync BOOLEAN DEFAULT 0
                   );
   
                   CREATE TABLE IF NOT EXISTS Prospection (
@@ -102,6 +105,7 @@ export class Database {
                       date DATETIME NOT NULL,
                       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                      is_Sync BOOLEAN DEFAULT 0,
                       FOREIGN KEY (ID_Prospecteur) REFERENCES Prospecteur(ID_Prospecteur)
                   );
   
@@ -117,6 +121,7 @@ export class Database {
                       ID_Prospecteur INTEGER NOT NULL,
                       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                      is_Sync BOOLEAN DEFAULT 0,
                       FOREIGN KEY (ID_Prospecteur) REFERENCES Prospecteur(ID_Prospecteur)
                   );
   
@@ -136,6 +141,7 @@ export class Database {
                       ID_Producteur INTEGER NOT NULL,
                       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                      is_Sync BOOLEAN DEFAULT 0,
                       FOREIGN KEY (ID_Producteur) REFERENCES Producteur(ID_Producteur)
                   );
   
@@ -150,6 +156,7 @@ export class Database {
                       ID_Champs INTEGER NOT NULL,
                       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                      is_Sync BOOLEAN DEFAULT 0,
                       FOREIGN KEY (ID_Champs) REFERENCES Champs(ID_Champs)
                   );
   
@@ -159,6 +166,7 @@ export class Database {
                       ID_PlanteAttaque INTEGER NOT NULL,
                       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                      is_Sync BOOLEAN DEFAULT 0,
                       FOREIGN KEY (ID_PlanteAttaque) REFERENCES Plante_Attaque(ID_PlanteAttaque)
                   );
   
@@ -168,6 +176,7 @@ export class Database {
                       ID_PartiePlante INTEGER NOT NULL,
                       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                      is_Sync BOOLEAN DEFAULT 0,
                       FOREIGN KEY (ID_PartiePlante) REFERENCES Partie_Plante(ID_PartiePlante)
                   );
   
@@ -180,6 +189,7 @@ export class Database {
                       ID_Prospection INTEGER NOT NULL,
                       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                      is_Sync BOOLEAN DEFAULT 0,
                       FOREIGN KEY (ID_Prospection) REFERENCES Prospection(ID_Prospection)
                   );
               `);
