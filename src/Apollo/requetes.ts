@@ -68,10 +68,10 @@ export const PRODUCTEUR = gql`
     $nomProd: String!
     $cin: Int!
     $partenaire: String
-    $fokotany: String!
-    $commune: String!
-    $district: String!
     $region: String!
+    $district: String!
+    $commune: String!
+    $fokotany: String!
     $ID_Pospecteur: BigInt!
   ) {
     createProducteur(
@@ -79,20 +79,20 @@ export const PRODUCTEUR = gql`
       nomProd: $nomProd
       cin: $cin
       partenaire: $partenaire
-      fokotany: $fokotany
-      commune: $commune
-      district: $district
       region: $region
+      district: $district
+      commune: $commune
+      fokotany: $fokotany
       ID_Pospecteur: $ID_Pospecteur
     ) {
       ID_Producteur
       nomProd
       cin
       partenaire
-      fokotany
-      commune
-      district
       region
+      district
+      commune
+      fokotany
       ID_Pospecteur
     }
   }

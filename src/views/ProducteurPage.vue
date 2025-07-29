@@ -60,25 +60,13 @@
               </div>
             </div>
 
-            <!-- Fokontany -->
+            <!-- Région -->
             <div class="input-group">
-              <label>Fokontany</label>
+              <label>Région</label>
               <div class="input-wrapper">
                 <ion-input
-                  v-model="producteur.fokotany"
-                  placeholder="Nom du fokontany"
-                  required
-                ></ion-input>
-              </div>
-            </div>
-
-            <!-- Commune -->
-            <div class="input-group">
-              <label>Commune</label>
-              <div class="input-wrapper">
-                <ion-input
-                  v-model="producteur.commune"
-                  placeholder="Nom de la commune"
+                  v-model="producteur.region"
+                  placeholder="Nom de la région"
                   required
                 ></ion-input>
               </div>
@@ -96,13 +84,25 @@
               </div>
             </div>
 
-            <!-- Région -->
+            <!-- Commune -->
             <div class="input-group">
-              <label>Région</label>
+              <label>Commune</label>
               <div class="input-wrapper">
                 <ion-input
-                  v-model="producteur.region"
-                  placeholder="Nom de la région"
+                  v-model="producteur.commune"
+                  placeholder="Nom de la commune"
+                  required
+                ></ion-input>
+              </div>
+            </div>
+
+            <!-- Fokontany -->
+            <div class="input-group">
+              <label>Fokontany</label>
+              <div class="input-wrapper">
+                <ion-input
+                  v-model="producteur.fokotany"
+                  placeholder="Nom du fokontany"
                   required
                 ></ion-input>
               </div>
@@ -145,10 +145,10 @@ interface IProducteur {
   nomProd: string;
   cin: number;
   partenaire: string;
-  fokotany: string;
-  commune: string;
-  district: string;
   region: string;
+  district: string;
+  commune: string;
+  fokotany: string;
   ID_Prospecteur: number;
 }
 
@@ -170,10 +170,10 @@ export default defineComponent({
       nomProd: '',
       cin: 0,
       partenaire: '',
-      fokotany: '',
-      commune: '',
-      district: '',
       region: '',
+      district: '',
+      commune: '',
+      fokotany: '',
       ID_Prospecteur: 0,
     });
 
@@ -200,7 +200,6 @@ export default defineComponent({
           console.error('Veuillez remplir tous les champs obligatoires');
           return;
         } else {
-          
           const producteurService = new Producteur();
           const result = await producteurService.create(producteur);
 
@@ -209,7 +208,7 @@ export default defineComponent({
             await showToast('Enregistrement réussi');
             router.push({
               path: '/champs',
-              query: {ID_Producteur: result.toString() }
+              query: { ID_Producteur: result.toString() },
             });
           } else {
             throw new Error('Echec de la création.');
@@ -230,7 +229,7 @@ export default defineComponent({
       producteur,
       validateAndContinue,
       goTo,
-      arrowBack
+      arrowBack,
     };
   },
 });

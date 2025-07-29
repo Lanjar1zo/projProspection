@@ -9,6 +9,10 @@
     <ion-content class="auth-content">
       <div class="auth-wrapper">
         <div class="form-container">
+          <div class="logo-container">
+            <img src="@/Images/logo-Minae.jpg" alt="Logo MINAE" class="logo" />
+          </div>
+
           <div class="form-header">
             <h2>Accès professionnel</h2>
             <p>Entrez vos identifiants pour continuer</p>
@@ -109,6 +113,22 @@ export default defineComponent({
 .header-toolbar {
   --background: #4a5568;
   --color: white;
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  margin: 10px 0 20px;
+}
+
+.logo {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  border-radius: 50%;
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
 }
 
 .auth-content {

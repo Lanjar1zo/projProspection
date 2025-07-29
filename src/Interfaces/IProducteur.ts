@@ -3,9 +3,9 @@ export default interface IProducteur {
   nomProd: string;
   cin: number;
   partenaire?: string;
-  fokotany: string;
-  commune: string;
-  district: string;
   region: string;
+  district: string;
+  commune: string;
+  fokotany: string;
   ID_Prospecteur: number;
 }
