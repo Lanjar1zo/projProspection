@@ -1,4 +1,4 @@
-import { Database } from '@/Database/Database';
+import Database from '@/Database/Database';
 import { IProspection } from '@/Interfaces/IProspection';
 
 export class GestionProspection {

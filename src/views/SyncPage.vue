@@ -112,7 +112,7 @@ import {
   SYMPTOME,
   ECHANTILLON,
 } from '@/Apollo/requetes';
-import { Database } from '@/Database/Database';
+import Database from '@/Database/Database';
 import { useRouter } from 'vue-router';
 import { arrowBack } from 'ionicons/icons';
 

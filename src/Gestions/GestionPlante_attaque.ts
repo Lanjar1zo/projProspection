@@ -1,4 +1,4 @@
-import { Database } from '@/Database/Database';
+import Database from '@/Database/Database';
 import { IPlante_attaque } from '@/Interfaces/IPlante_attaque';
 
 export class GestionPlante_attaque {

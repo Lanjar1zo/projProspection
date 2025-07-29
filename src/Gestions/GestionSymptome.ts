@@ -1,4 +1,4 @@
-import { Database } from '@/Database/Database';
+import Database from '@/Database/Database';
 import { ISymptome } from '@/Interfaces/ISymptome';
 
 export class GestionSymptome {
