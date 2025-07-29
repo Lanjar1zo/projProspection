@@ -1,11 +1,12 @@
 import Database from '@/Database/Database';
 import { IChamps } from '@/Interfaces/IChamps';
+import SQLiteService from '@/services/SQLiteService';
 
 export class GestionChamps {
   private db: Database;
 
   constructor() {
-    this.db = new Database();
+    this.db = new Database(new SQLiteService());
   }
 
   // Créer un nouveau prospecteur

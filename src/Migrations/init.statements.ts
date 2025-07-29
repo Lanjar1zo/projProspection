@@ -1,8 +1,8 @@
 export const InitStatements = [
-    {
+  {
     toVersion: 1,
     statements: [
-        `CREATE TABLE IF NOT EXISTS users (
+      `CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             active INTEGER DEFAULT 1
@@ -37,10 +37,10 @@ export const InitStatements = [
             nomProd TEXT NOT NULL,
             cin INTEGER UNIQUE NOT NULL,
             partenaire TEXT,
-            fokotany TEXT NOT NULL,
-            commune TEXT NOT NULL,
-            district TEXT NOT NULL,
             region TEXT NOT NULL,
+            district TEXT NOT NULL,
+            commune TEXT NOT NULL,
+            fokotany TEXT NOT NULL,
             ID_Prospecteur INTEGER NOT NULL,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -109,11 +109,11 @@ export const InitStatements = [
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             is_Sync BOOLEAN DEFAULT 0,
             FOREIGN KEY (ID_Prospection) REFERENCES Prospection(ID_Prospection)
-        );`
-    ]
-    },
-    /* add new statements below for next database version when required*/
-    /*
+        );`,
+    ],
+  },
+  /* add new statements below for next database version when required*/
+  /*
     {
     toVersion: 2,
     statements: [

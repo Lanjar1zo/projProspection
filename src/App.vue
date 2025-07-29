@@ -6,8 +6,6 @@
 
 <script setup lang="ts">
 import { IonApp, IonRouterOutlet } from '@ionic/vue';
-import Database from '@/Database/Database';
-import { onMounted } from 'vue';
 
 // Initialisation de la BD
 /*onMounted(async () => {

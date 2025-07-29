@@ -1,11 +1,12 @@
 import Database from '@/Database/Database';
 import IProducteur from '@/Interfaces/IProducteur';
+import SQLiteService from '@/services/SQLiteService';
 
 export class GestionProducteur {
   private db: Database;
 
   constructor() {
-    this.db = new Database();
+    this.db = new Database(new SQLiteService());
   }
 
   async create(producteur: IProducteur): Promise<number> {

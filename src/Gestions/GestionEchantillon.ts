@@ -1,11 +1,12 @@
 import Database from '@/Database/Database';
 import { IEchantillon } from '@/Interfaces/IEchantillon';
+import SQLiteService from '@/services/SQLiteService';
 
 export class GestionEchantillon {
   private db: Database;
 
   constructor() {
-    this.db = new Database();
+    this.db = new Database(new SQLiteService());
   }
 
   async create(echantillon: IEchantillon): Promise<number> {

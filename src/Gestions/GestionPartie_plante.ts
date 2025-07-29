@@ -1,11 +1,12 @@
 import Database from '@/Database/Database';
 import { IPartie_plante } from '@/Interfaces/IPartie_plante';
+import SQLiteService from '@/services/SQLiteService';
 
 export class GestionPartie_plante {
   private db: Database;
 
   constructor() {
-    this.db = new Database();
+    this.db = new Database(new SQLiteService());
   }
 
   async create(champs: IPartie_plante): Promise<number> {

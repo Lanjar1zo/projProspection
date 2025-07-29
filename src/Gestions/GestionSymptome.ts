@@ -1,11 +1,12 @@
 import Database from '@/Database/Database';
 import { ISymptome } from '@/Interfaces/ISymptome';
+import SQLiteService from '@/services/SQLiteService';
 
 export class GestionSymptome {
   private db: Database;
 
   constructor() {
-    this.db = new Database();
+    this.db = new Database(new SQLiteService());
   }
 
   async create(symptome: ISymptome): Promise<number> {

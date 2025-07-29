@@ -1,11 +1,12 @@
 import Database from '@/Database/Database';
 import { IProspecteur } from '@/Interfaces/IProspecteur';
+import SQLiteService from '@/services/SQLiteService';
 
 export class GestionProspecteur {
   private db: Database;
 
   constructor() {
-    this.db = new Database();
+    this.db = new Database(new SQLiteService());
   }
 
   // Créer un nouveau prospecteur

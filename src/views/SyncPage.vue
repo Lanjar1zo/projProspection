@@ -115,6 +115,7 @@ import {
 import Database from '@/Database/Database';
 import { useRouter } from 'vue-router';
 import { arrowBack } from 'ionicons/icons';
+import SQLiteService from '@/services/SQLiteService';
 
 interface SyncItem {
   id: number;
@@ -144,7 +145,7 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
-    const database = new Database();
+    const database = new Database(new SQLiteService());
     const isSyncing = ref(false);
     const connectionStatus = ref(false);
 
@@ -551,7 +552,6 @@ export default defineComponent({
     // Initialisation de la base de données
     const initDB = async () => {
       try {
-        await database.initialize();
         await refreshData();
       } catch (error) {
         console.error('DB init error:', error);

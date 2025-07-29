@@ -1,11 +1,12 @@
 import Database from '@/Database/Database';
 import { IPlante_attaque } from '@/Interfaces/IPlante_attaque';
+import SQLiteService from '@/services/SQLiteService';
 
 export class GestionPlante_attaque {
   private db: Database;
 
   constructor() {
-    this.db = new Database();
+    this.db = new Database(new SQLiteService());
   }
 
   async create(pa: IPlante_attaque): Promise<number> {

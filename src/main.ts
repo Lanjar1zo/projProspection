@@ -5,7 +5,7 @@ import router from './router';
 import { IonicVue } from '@ionic/vue';
 import { Capacitor } from '@capacitor/core';
 import { JeepSqlite } from 'jeep-sqlite/dist/components/jeep-sqlite';
-import { defineCustomElements as pwaElements } from '@ionic/pwa-elements/loader';
+//import { defineCustomElements as pwaElements } from '@ionic/pwa-elements/loader';
 import SQLiteService from './services/SQLiteService';
 import Database from './Database/Database';
 import InitializeAppService from './services/InitializeAppService';
@@ -65,15 +65,16 @@ app.config.globalProperties.$database = database;
 const initAppServ = new InitializeAppService(sqliteServ, database);
 
 const mountApp = () => {
-  initAppServ.initializeApp()
-  .then(() => {
-    router.isReady().then(() => {
-      app.mount('#app');
+  initAppServ
+    .initializeApp()
+    .then(() => {
+      router.isReady().then(() => {
+        app.mount('#app');
+      });
+    })
+    .catch((error) => {
+      console.error('App Initialization error:', error);
     });
-  })
-  .catch((error) => {
-    console.error('App Initialization error:', error);
-  });
 };
 
 console.log(platform);

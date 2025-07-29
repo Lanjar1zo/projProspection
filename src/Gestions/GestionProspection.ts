@@ -1,11 +1,12 @@
 import Database from '@/Database/Database';
 import { IProspection } from '@/Interfaces/IProspection';
+import SQLiteService from '@/services/SQLiteService';
 
 export class GestionProspection {
   private db: Database;
 
   constructor() {
-    this.db = new Database();
+    this.db = new Database(new SQLiteService());
   }
 
   async create(producteur: IProspection): Promise<number> {

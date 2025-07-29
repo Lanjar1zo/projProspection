@@ -1,11 +1,12 @@
 import Database from '@/Database/Database';
 import { ILogin } from '@/Interfaces/ILogin';
+import SQLiteService from '@/services/SQLiteService';
 
 export class GestionLogin {
   private db: Database;
 
   constructor() {
-    this.db = new Database();
+    this.db = new Database(new SQLiteService());
   }
 
   // Créer un nouveau prospecteur
