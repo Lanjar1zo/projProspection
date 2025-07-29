@@ -1,4 +1,4 @@
-import { Database } from '@/Database/Database';
+import Database from '@/Database/Database';
 import { IEchantillon } from '@/Interfaces/IEchantillon';
 
 export class GestionEchantillon {

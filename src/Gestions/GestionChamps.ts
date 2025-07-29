@@ -1,4 +1,4 @@
-import { Database } from '@/Database/Database';
+import Database from '@/Database/Database';
 import { IChamps } from '@/Interfaces/IChamps';
 
 export class GestionChamps {

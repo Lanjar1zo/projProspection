@@ -1,4 +1,4 @@
-import { Database } from '@/Database/Database';
+import Database from '@/Database/Database';
 import { ILogin } from '@/Interfaces/ILogin';
 
 export class GestionLogin {

@@ -1,4 +1,4 @@
-import { Database } from '@/Database/Database';
+import Database from '@/Database/Database';
 import IProducteur from '@/Interfaces/IProducteur';
 
 export class GestionProducteur {
