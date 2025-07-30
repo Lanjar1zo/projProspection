@@ -35,10 +35,10 @@
             </ion-col>
 
             <ion-col size="12" size-md="6" class="compact-col">
-              <ion-card @click="goTo('ListeProducteur')" class="square-card">
+              <ion-card @click="goTo('ListeProspection')" class="square-card">
                 <ion-card-header>
-                  <ion-card-title>Gestion Producteurs</ion-card-title>
-                  <ion-card-subtitle>Liste des producteurs</ion-card-subtitle>
+                  <ion-card-title>Historique des prospection</ion-card-title>
+                  <ion-card-subtitle>Liste des prospections</ion-card-subtitle>
                 </ion-card-header>
                 <ion-card-content>
                   <ion-icon :icon="people" size="large"></ion-icon>
@@ -81,6 +81,7 @@
       :is-open="contactNous"
       @didDismiss="contactNous = false"
       class="custom-modal"
+      :aria-hidden="!contactNous"
     >
       <ion-header>
         <ion-toolbar class="modal-toolbar">
@@ -101,8 +102,11 @@
           </p>
           <div class="email-section">
             <p class="email-text">Pour toute demande, contactez-nous à :</p>
-            <a href="mailto:contact@dpv-exemple.com" class="email-link">
-              contact@dpv-exemple.com
+            <a
+              href="mailto:randriamampian@gmail.com?subject=Soumission d'une requête"
+              class="email-link"
+            >
+              randriamampian@gmail.com
             </a>
           </div>
         </div>

@@ -222,6 +222,7 @@ import {
   IonIcon,
   IonSpinner,
   toastController,
+  alertController,
 } from '@ionic/vue';
 import { Geolocation } from '@capacitor/geolocation';
 import Champs from '@/Classes/Champs';
@@ -334,10 +335,24 @@ export default defineComponent({
         if (result) {
           console.log('Champ créé avec succès, ID:', result);
           await showSuccessToast();
-          router.push({
-            path: '/plante-attaque',
-            query: { ID_Champs: result.toString() },
+          
+          const alert = await alertController.create({
+            header: 'Succès',
+            message: `Champ créé avec l'ID: ${result}`,
+            buttons: [
+              {
+                text: 'OK',
+                handler: () => {
+                  router.push({
+                    path: '/plante-attaque',
+                    query: { ID_Champs: result.toString() },
+                  });
+                },
+              },
+            ],
           });
+
+          await alert.present();
         } else {
           await showErrorToast('Échec de la création du champ');
           console.error('Échec de la création du champ');

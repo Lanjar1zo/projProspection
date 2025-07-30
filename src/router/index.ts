@@ -12,7 +12,7 @@ import PartiePlantePage from '@/views/Partie_plantePage.vue';
 import SymptomePage from '@/views/SymptomePage.vue';
 import EchantillonPage from '@/views/EchantillonPage.vue';
 import SyncPage from '@/views/SyncPage.vue';
-import ListeProducteurPage from '@/views/ListeProducteurPage.vue';
+import ListeProspectionPage from '@/views/ListeProspectionPage.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -60,8 +60,8 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/liste',
-    name: 'ListeProducteur',
-    component: ListeProducteurPage,
+    name: 'ListeProspection',
+    component: ListeProspectionPage,
     meta: { requiresAuth: false },
   },
   {

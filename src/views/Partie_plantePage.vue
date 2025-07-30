@@ -78,6 +78,7 @@ import {
   IonLabel,
   IonButton,
   toastController,
+  alertController,
 } from '@ionic/vue';
 import Partie_plante from '@/Classes/Partie_plante';
 import { IPartie_plante } from '@/Interfaces/IPartie_plante';
@@ -148,11 +149,25 @@ export default defineComponent({
 
         if (result) {
           console.log('Partie plante créée avec ID:', result);
-          await showToast('Enregistrement réussi');
-          router.push({
-            path: '/symptome',
-            query: { ID_PartiePlante: result.toString() },
+
+          const alert = await alertController.create({
+            header: 'Enregistrement réussi',
+            message: `ID de la partie plante: ${result}`,
+            buttons: [
+              {
+                text: 'Continuer',
+                handler: () => {
+                  router.push({
+                    path: '/symptome',
+                    query: { ID_PartiePlante: result.toString() },
+                  });
+                },
+              },
+            ],
           });
+
+          await alert.present();
+          await showToast('Enregistrement réussi');
         } else {
           throw new Error('Échec de la création');
         }

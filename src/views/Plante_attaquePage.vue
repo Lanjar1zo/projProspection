@@ -170,6 +170,7 @@ import {
   IonRange,
   IonButton,
   toastController,
+  alertController,
 } from '@ionic/vue';
 import { IPlante_attaque } from '@/Interfaces/IPlante_attaque';
 import Plante_attaque from '@/Classes/Plante_attaque';
@@ -252,11 +253,30 @@ export default defineComponent({
 
         if (result) {
           console.log('Évaluation créée avec ID:', result);
-          await showSuccessToast();
-          router.push({
-            path: '/partie-plante',
-            query: { ID_PlanteAttaque: result.toString() },
+
+          const alert = await alertController.create({
+            header: 'Évaluation enregistrée',
+            message: `
+              <div style="text-align: center;">
+                <p><strong>ID:</strong> ${result}</p>
+                <p><strong>Taux d'infestation:</strong> ${planteAttaque.tauxInfestation}%</p>
+              </div>
+            `,
+            buttons: [
+              {
+                text: 'Continuer',
+                handler: () => {
+                  router.push({
+                    path: '/partie-plante',
+                    query: { ID_PlanteAttaque: result.toString() },
+                  });
+                },
+              },
+            ],
           });
+
+          await alert.present();
+          await showSuccessToast();
         } else {
           await showErrorToast("Erreur lors de l'enregistrement");
           console.error("Erreur lors de la création de l'évaluation");

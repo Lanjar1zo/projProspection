@@ -137,6 +137,7 @@ import {
   IonInput,
   IonButton,
   toastController,
+  alertController,
 } from '@ionic/vue';
 import Producteur from '@/Classes/Producteur';
 import { arrowBack } from 'ionicons/icons';
@@ -205,11 +206,25 @@ export default defineComponent({
 
           if (result) {
             console.log('Partie plante créée avec ID:', result);
-            await showToast('Enregistrement réussi');
-            router.push({
-              path: '/champs',
-              query: { ID_Producteur: result.toString() },
+            
+            const alert = await alertController.create({
+              header: 'Enregistrement réussi',
+              message: `ID du producteur: ${result}`,
+              buttons: [
+                {
+                  text: 'Continuer',
+                  handler: () => {
+                    router.push({
+                      path: '/champs',
+                      query: { ID_Producteur: result.toString() },
+                    });
+                  },
+                },
+              ],
             });
+
+            await alert.present();
+            await showToast('Enregistrement réussi');
           } else {
             throw new Error('Echec de la création.');
           }

@@ -127,6 +127,7 @@ import {
   IonInput,
   IonButton,
   toastController,
+  alertController,
 } from '@ionic/vue';
 import Prospecteur from '@/Classes/Prospecteur';
 import { arrowBack } from 'ionicons/icons';
@@ -182,11 +183,24 @@ export default defineComponent({
         const result = await prospecteurService.create(prospecteur);
 
         if (result) {
-          await showToast('Enregistrement réussi');
-          router.push({
-            path: '/prospection',
-            query: { ID_Prospecteur: result.toString() },
+          const alert = await alertController.create({
+            header: 'Enregistrement réussi',
+            message: `ID du prospecteur: ${result}`,
+            buttons: [
+              {
+                text: 'Continuer',
+                handler: () => {
+                  router.push({
+                    path: '/prospection',
+                    query: { ID_Prospecteur: result.toString() },
+                  });
+                },
+              },
+            ],
           });
+
+          await alert.present();
+          await showToast('Enregistrement réussi');
         } else {
           throw new Error('Échec de la création');
         }

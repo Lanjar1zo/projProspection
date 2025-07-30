@@ -140,6 +140,7 @@ import {
   IonSelectOption,
   IonButton,
   toastController,
+  alertController,
 } from '@ionic/vue';
 import { IEchantillon } from '@/Interfaces/IEchantillon';
 import Echantillon from '@/Classes/Echantillon';
@@ -206,8 +207,21 @@ export default defineComponent({
         const id = await echantillonService.create(echantillon);
         console.log('Échantillon créé avec ID:', id);
 
+        const alert = await alertController.create({
+          header: 'Enregistrement réussi',
+          message: `ID de l'échantillon: ${id}`,
+          buttons: [
+            {
+              text: "Retour à l'accueil",
+              handler: () => {
+                router.push('/accueil');
+              },
+            },
+          ],
+        });
+
+        await alert.present();
         await showSuccessToast();
-        router.push('/accueil');
       } catch (error) {
         console.error('Erreur:', error);
         await showErrorToast("Erreur lors de l'enregistrement");

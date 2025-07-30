@@ -317,10 +317,11 @@ export default defineComponent({
             nomProd: item.nomProd,
             cin: item.cin,
             partenaire: item.partenaire,
-            fokotany: item.fokotany,
-            commune: item.commune,
-            district: item.district,
+            
             region: item.region,
+            district: item.district,
+            commune: item.commune,
+            fokotany: item.fokotany,
             ID_Pospecteur: item.ID_Prospecteur,
           });
           await markAsSynced('Producteur', item.ID_Producteur);

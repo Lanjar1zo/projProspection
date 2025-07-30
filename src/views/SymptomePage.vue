@@ -78,6 +78,7 @@ import {
   IonLabel,
   IonButton,
   toastController,
+  alertController,
 } from '@ionic/vue';
 import Symptome from '@/Classes/Symptome';
 import { ISymptome } from '@/Interfaces/ISymptome';
@@ -160,9 +161,27 @@ export default defineComponent({
         const result = await symptomeService.create(symptome);
 
         if (result) {
-          console.log('Partie plante créée avec ID:', result);
+          console.log('Symptôme créé avec ID:', result);
+          const alert = await alertController.create({
+            header: 'Enregistrement réussi',
+            message: `Symptôme(s) enregistré(s) avec succès`,
+            buttons: [
+              {
+                text: 'Continuer',
+                handler: () => {
+                  router.push({
+                    path: '/echantillon',
+                    query: {
+                      ID_Symptome: result.toString(),
+                    },
+                  });
+                },
+              },
+            ],
+          });
+
+          await alert.present();
           await showToast('Enregistrement réussi');
-          router.push('/echantillon');
         } else {
           throw new Error('Échec de la création');
         }

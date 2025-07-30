@@ -9,15 +9,15 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "esModuleInterop": true,
-    "lib": ["ESNext", "DOM"],
+    "lib": ["ESNext", "DOM", "ES2015", "es2017"],
     "skipLibCheck": true,
     "noEmit": true,
     "paths": {
       "@/*": ["./src/*"]
     },
-
-    "types": ["@apollo/client", "@vue/apollo-composable"]
+    "types": ["@apollo/client", "@vue/apollo-composable", "vite/client"]
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
+  "exclude": ["node_modules"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

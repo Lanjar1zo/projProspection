@@ -75,6 +75,8 @@ const mountApp = () => {
     .catch((error) => {
       console.error('App Initialization error:', error);
     });
+
+  //app.mount('#app');
 };
 
 console.log(platform);

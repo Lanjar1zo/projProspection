@@ -74,6 +74,7 @@ import {
   IonDatetime,
   IonButton,
   toastController,
+  alertController,
 } from '@ionic/vue';
 import { useRoute, useRouter } from 'vue-router';
 import { IProspection } from '@/Interfaces/IProspection';
@@ -119,11 +120,26 @@ export default defineComponent({
 
         if (result) {
           console.log('Prospection créée avec ID:', result);
-          await showToast('Enregistrement réussi');
-          router.push({
-            path: '/producteur',
-            query: { ID_Prospection: result.toString() },
+          const alert = await alertController.create({
+            header: 'Enregistrement réussi',
+            message: `Prospection créée avec ID: ${result}`,
+            buttons: [
+              {
+                text: 'Continuer',
+                handler: () => {
+                  router.push({
+                    path: '/producteur',
+                    query: {
+                      ID_Prospection: result.toString(),
+                    },
+                  });
+                },
+              },
+            ],
           });
+
+          await alert.present();
+          await showToast('Enregistrement réussi');
         } else {
           throw new Error('Échec de la création');
         }
