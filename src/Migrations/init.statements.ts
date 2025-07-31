@@ -12,7 +12,7 @@ export const InitStatements = [
             password TEXT NOT NULL
         );
         CREATE TABLE IF NOT EXISTS Prospecteur (
-            ID_Prospecteur INTEGER PRIMARY KEY AUTOINCREMENT,
+            ID_Prospecteur INTEGER PRIMARY KEY ,
             nomProspecteur TEXT NOT NULL,
             prenProspecteur TEXT NOT NULL,
             fonction TEXT NOT NULL,

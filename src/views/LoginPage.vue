@@ -71,7 +71,12 @@ import {
   IonContent,
   IonInput,
   IonButton,
+  toastController,
 } from '@ionic/vue';
+import { LOGIN } from '@/Apollo/requetes';
+import { GestionLogin } from '@/Gestions/GestionLogin';
+import { GestionProspecteur } from '@/Gestions/GestionProspecteur';
+import { useMutation } from '@vue/apollo-composable';
 
 export default defineComponent({
   name: 'LoginPage',
@@ -91,9 +96,65 @@ export default defineComponent({
       password: '',
     });
 
-    const handleLogin = () => {
-      console.log('Login data:', login);
-      router.push('/accueil');
+    const { mutate: loginMutation } = useMutation(LOGIN);
+    const gestionLogin = new GestionLogin();
+    const gestionProspecteur = new GestionProspecteur();
+
+    const showToast = async (message: string, color = 'danger') => {
+      const toast = await toastController.create({
+        message,
+        duration: 3000,
+        color,
+        position: 'top',
+      });
+      await toast.present();
+    };
+
+    const handleLogin = async () => {
+      try {
+        // Verification dans le local
+        const localLogin = await gestionLogin.findByEmail(login.email);
+
+        if (localLogin && localLogin.password === login.password) {
+          // Si trouver en local + mdp correct
+          const prospecteur = await gestionProspecteur.findByEmail(login.email);
+          if (prospecteur) {
+            router.push({
+              path: '/accueil',
+              query: { ID_Prospecteur: prospecteur.ID_Prospecteur?.toString() },
+            });
+          }
+
+          return;
+        }
+
+        // Sinon, chercher dans le backoffice web
+        const result = await loginMutation({ email: login.email });
+
+        if (result?.data?.prospecteurByEmail) {
+          const prospecteur = result.data.prospecteurByEmail;
+          if (prospecteur.password === login.password) {
+            // stocker en local
+            await gestionLogin.create({
+              email: prospecteur.email,
+              password: prospecteur.password,
+            });
+
+            await gestionProspecteur.create(prospecteur);
+            router.push({
+              path: '/accueil',
+              query: { ID_Prospecteur: prospecteur.ID_Prospecteur?.toString() },
+            });
+          } else {
+            await showToast('Mot de passe incorrect');
+          }
+        } else {
+          router.push('/prospecteur');
+        }
+      } catch (error) {
+        console.error('Erreur lors de la connexion: ', error);
+        await showToast('Erreur lors de la connexion');
+      }
     };
 
     const goToRegister = () => {

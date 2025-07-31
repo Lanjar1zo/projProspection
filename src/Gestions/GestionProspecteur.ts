@@ -73,7 +73,6 @@ export class GestionProspecteur {
       params.push(prospecteur.password);
     }
 
-
     if (fields.length === 0) {
       return 0;
     }
@@ -91,21 +90,9 @@ export class GestionProspecteur {
     return this.db.executeUpdate(query, [id]);
   }
 
-  // Rechercher par nom (insensible à la casse)
-  async searchByName(nom: string): Promise<IProspecteur[]> {
-    const query =
-      'SELECT * FROM Prospecteur WHERE LOWER(nomProspecteur) LIKE ?';
-    return this.db.executeQuery(query, [`%${nom.toLowerCase()}%`]);
-  }
-
-  // Authentification par email/mot de passe
-  async authenticate(
-    email: string,
-    password: string
-  ): Promise<IProspecteur | null> {
-    const query =
-      'SELECT * FROM Prospecteur WHERE email = ? AND password = ? LIMIT 1';
-    const results = await this.db.executeQuery(query, [email, password]);
+  async findByEmail(email: string): Promise<IProspecteur | null> {
+    const query = 'SELECT * FROM Prospecteur WHERE email = ? LIMIT 1';
+    const results = await this.db.executeQuery(query, [email]);
     return results[0] || null;
   }
 }

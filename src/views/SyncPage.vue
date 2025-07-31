@@ -239,7 +239,7 @@ export default defineComponent({
     };
 
     // Afficher un toast
-    const showToast = async (message: string, color: string = 'success') => {
+    const showToast = async (message: string, color = 'success') => {
       const toast = await toastController.create({
         message,
         duration: 2000,

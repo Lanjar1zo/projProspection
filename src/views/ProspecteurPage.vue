@@ -129,8 +129,12 @@ import {
   toastController,
   alertController,
 } from '@ionic/vue';
-import Prospecteur from '@/Classes/Prospecteur';
+
 import { arrowBack } from 'ionicons/icons';
+import { useMutation } from '@vue/apollo-composable';
+import { PROSPECTEUR } from '@/Apollo/requetes';
+import { GestionLogin } from '@/Gestions/GestionLogin';
+import { GestionProspecteur } from '@/Gestions/GestionProspecteur';
 
 export default defineComponent({
   name: 'ProspecteurPage',
@@ -155,7 +159,11 @@ export default defineComponent({
       password: '',
     });
 
-    const showToast = async (message: string, color: string = 'success') => {
+    const { mutate: createProspecteur } = useMutation(PROSPECTEUR);
+    const gestionLogin = new GestionLogin();
+    const gestionProspecteur = new GestionProspecteur();
+
+    const showToast = async (message: string, color = 'success') => {
       const toast = await toastController.create({
         message,
         duration: 3000,
@@ -175,24 +183,51 @@ export default defineComponent({
           !prospecteur.tel ||
           !prospecteur.password
         ) {
-          console.error('Veuillez remplir tous les champs obligatoires');
+          await showToast('Veuillez remplir tous les champs obligatoires');
           return;
         }
 
-        const prospecteurService = new Prospecteur();
-        const result = await prospecteurService.create(prospecteur);
+        // Envoye dans le backoffice
+        const result = await createProspecteur({
+          nomProspecteur: prospecteur.nomProspecteur,
+          prenProspecteur: prospecteur.prenProspecteur,
+          fonction: prospecteur.fonction,
+          email: prospecteur.email,
+          tel: prospecteur.tel,
+          password: prospecteur.password,
+        });
 
-        if (result) {
+        if (result?.data?.createProspecteur) {
+          const createdProspecteur = result.data.createProspecteur;
+
+          await gestionLogin.create({
+            email: createdProspecteur.email,
+            password: createdProspecteur.password,
+          });
+
+          await gestionProspecteur.create({
+            ID_Prospecteur: createdProspecteur.ID_Prospecteur,
+            nomProspecteur: createdProspecteur.nomProspecteur,
+            prenProspecteur: createdProspecteur.prenProspecteur,
+            fonction: createdProspecteur.fonction,
+            email: createdProspecteur.email,
+            tel: createdProspecteur.tel,
+            password: createdProspecteur.password,
+          });
+
           const alert = await alertController.create({
             header: 'Enregistrement réussi',
-            message: `ID du prospecteur: ${result}`,
+            message: 'Votre compte a été créé avec succès',
             buttons: [
               {
                 text: 'Continuer',
                 handler: () => {
                   router.push({
-                    path: '/prospection',
-                    query: { ID_Prospecteur: result.toString() },
+                    path: '/accueil',
+                    query: {
+                      ID_Prospecteur:
+                        createdProspecteur.ID_Prospecteur.toString(),
+                    },
                   });
                 },
               },
@@ -202,7 +237,7 @@ export default defineComponent({
           await alert.present();
           await showToast('Enregistrement réussi');
         } else {
-          throw new Error('Échec de la création');
+          throw new Error('Echec lors de la création');
         }
       } catch (error) {
         console.error('Erreur:', error);
