@@ -317,7 +317,7 @@ export default defineComponent({
             nomProd: item.nomProd,
             cin: item.cin,
             partenaire: item.partenaire,
-            
+
             region: item.region,
             district: item.district,
             commune: item.commune,

@@ -56,55 +56,55 @@ const routes: Array<RouteRecordRaw> = [
     path: '/producteur',
     name: 'Producteur',
     component: ProducteurPage,
-    meta: { requiresAuth: false },
+    meta: { requiresAuth: true },
   },
   {
     path: '/liste',
     name: 'ListeProspection',
     component: ListeProspectionPage,
-    meta: { requiresAuth: false },
+    meta: { requiresAuth: true },
   },
   {
     path: '/prospection',
     name: 'Prospection',
     component: ProspectionPage,
-    meta: { requiresAuth: false },
+    meta: { requiresAuth: true },
   },
   {
     path: '/champs',
     name: 'Champs',
     component: ChampsPage,
-    meta: { requiresAuth: false },
+    meta: { requiresAuth: true },
   },
   {
     path: '/plante-attaque',
     name: 'PlanteAttaque',
     component: PlanteAttaquePage,
-    meta: { requiresAuth: false },
+    meta: { requiresAuth: true },
   },
   {
     path: '/partie-plante',
     name: 'PartiePlante',
     component: PartiePlantePage,
-    meta: { requiresAuth: false },
+    meta: { requiresAuth: true },
   },
   {
     path: '/symptome',
     name: 'Symptome',
     component: SymptomePage,
-    meta: { requiresAuth: false },
+    meta: { requiresAuth: true },
   },
   {
     path: '/echantillon',
     name: 'Echantillon',
     component: EchantillonPage,
-    meta: { requiresAuth: false },
+    meta: { requiresAuth: true },
   },
   {
     path: '/sync',
     name: 'Sync',
     component: SyncPage,
-    meta: { requiresAuth: false },
+    meta: { requiresAuth: true },
   },
   {
     path: '/:pathMatch(.*)*',
@@ -116,22 +116,5 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 });
-
-/*
-router.beforeEach((to, from, next) => {
-  const isAuthenticated = localStorage.getItem('authToken');
-  const requiresAuth = to.meta.requiresAuth;
-
-  if (requiresAuth && !isAuthenticated) {
-    next({
-      name: 'Login',
-      query: { redirect: to.fullPath },
-    });
-  } else if (to.name === 'Login' && isAuthenticated) {
-    next({ name: 'Accueil' });
-  } else {
-    next();
-  }
-});*/
 
 export default router;

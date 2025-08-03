@@ -76,7 +76,7 @@ import {
 import { LOGIN } from '@/Apollo/requetes';
 import { GestionLogin } from '@/Gestions/GestionLogin';
 import { GestionProspecteur } from '@/Gestions/GestionProspecteur';
-import { useMutation } from '@vue/apollo-composable';
+import { useQuery } from '@vue/apollo-composable';
 
 export default defineComponent({
   name: 'LoginPage',
@@ -96,7 +96,27 @@ export default defineComponent({
       password: '',
     });
 
-    const { mutate: loginMutation } = useMutation(LOGIN);
+    const { refetch: fetchProspecteur } = useQuery<{
+      prospecteurByEmail: {
+        ID_Prospecteur: number;
+        nomProspecteur: string;
+        prenProspecteur: string;
+        fonction: string;
+        email: string;
+        tel: string;
+        password: string;
+      };
+    }>(
+      LOGIN,
+      () => ({
+        email: login.email,
+      }),
+      {
+        enabled: false,
+        fetchPolicy: 'network-only',
+      }
+    );
+
     const gestionLogin = new GestionLogin();
     const gestionProspecteur = new GestionProspecteur();
 
@@ -112,48 +132,89 @@ export default defineComponent({
 
     const handleLogin = async () => {
       try {
-        // Verification dans le local
-        const localLogin = await gestionLogin.findByEmail(login.email);
+        console.log('Tentative de connexion avec:', login.email);
 
-        if (localLogin && localLogin.password === login.password) {
-          // Si trouver en local + mdp correct
-          const prospecteur = await gestionProspecteur.findByEmail(login.email);
-          if (prospecteur) {
-            router.push({
-              path: '/accueil',
-              query: { ID_Prospecteur: prospecteur.ID_Prospecteur?.toString() },
-            });
+        // 1. Vérification locale
+        try {
+          const localLogin = await gestionLogin.findByEmail(login.email);
+          if (localLogin?.password === login.password) {
+            const prospecteur = await gestionProspecteur.findByEmail(
+              login.email
+            );
+            if (prospecteur) {
+              router.push({
+                path: '/accueil',
+                query: {
+                  ID_Prospecteur: prospecteur.ID_Prospecteur?.toString(),
+                },
+              });
+              return;
+            }
           }
+        } catch (localError) {
+          console.log('Aucun utilisateur local trouvé');
+        }
 
+        // 2. Requête GraphQL avec typage correct
+        console.log('Envoi de la requête au serveur...');
+        const result = await fetchProspecteur({ email: login.email });
+
+        console.log('Réponse du serveur:', result);
+
+        if (!result) {
+          console.error('Aucune réponse du serveur');
+          await showToast('Erreur de communication avec le serveur');
           return;
         }
 
-        // Sinon, chercher dans le backoffice web
-        const result = await loginMutation({ email: login.email });
-
-        if (result?.data?.prospecteurByEmail) {
-          const prospecteur = result.data.prospecteurByEmail;
-          if (prospecteur.password === login.password) {
-            // stocker en local
-            await gestionLogin.create({
-              email: prospecteur.email,
-              password: prospecteur.password,
-            });
-
-            await gestionProspecteur.create(prospecteur);
-            router.push({
-              path: '/accueil',
-              query: { ID_Prospecteur: prospecteur.ID_Prospecteur?.toString() },
-            });
-          } else {
-            await showToast('Mot de passe incorrect');
-          }
-        } else {
-          router.push('/prospecteur');
+        if (result.error) {
+          console.error('Erreur GraphQL:', result.error);
+          await showToast('Erreur de communication avec le serveur');
+          return;
         }
-      } catch (error) {
-        console.error('Erreur lors de la connexion: ', error);
-        await showToast('Erreur lors de la connexion');
+
+        if (!result.data?.prospecteurByEmail) {
+          console.log('Aucun prospecteur trouvé pour:', login.email);
+          await showToast('Compte non trouvé');
+          router.push('/prospecteur');
+          return;
+        }
+
+        const prospecteur = result.data.prospecteurByEmail;
+        console.log('Prospecteur trouvé:', prospecteur);
+
+        // 3. Vérification du mot de passe
+        if (prospecteur.password !== login.password) {
+          await showToast('Mot de passe incorrect');
+          return;
+        }
+
+        // 4. Stockage local
+        console.log('Stockage des données locales...');
+        await gestionLogin.create({
+          email: prospecteur.email,
+          password: prospecteur.password,
+        });
+
+        await gestionProspecteur.create({
+          ID_Prospecteur: prospecteur.ID_Prospecteur,
+          nomProspecteur: prospecteur.nomProspecteur,
+          prenProspecteur: prospecteur.prenProspecteur,
+          fonction: prospecteur.fonction,
+          email: prospecteur.email,
+          tel: prospecteur.tel,
+          password: prospecteur.password,
+        });
+
+        // 5. Redirection
+        console.log('Connexion réussie, redirection...');
+        router.push({
+          path: '/accueil',
+          query: { ID_Prospecteur: prospecteur.ID_Prospecteur?.toString() },
+        });
+      } catch (err) {
+        console.error('Erreur inattendue:', err);
+        await showToast('Une erreur est survenue');
       }
     };
 

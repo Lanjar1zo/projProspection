@@ -31,7 +31,7 @@ export const PROSPECTEUR = gql`
 `;
 
 export const LOGIN = gql`
-  mutation ($email: String!) {
+  query ProspecteurByEmail($email: String!) {
     prospecteurByEmail(email: $email) {
       ID_Prospecteur
       nomProspecteur
