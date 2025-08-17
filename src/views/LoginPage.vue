@@ -132,7 +132,10 @@ export default defineComponent({
 
     const handleLogin = async () => {
       try {
-        console.log('Tentative de connexion avec:', login.email);
+        console.log(
+          'Tentative de connexion avec:',
+          `${login.email} et ${login.password}`
+        );
 
         // 1. Vérification locale
         try {
@@ -155,7 +158,7 @@ export default defineComponent({
           console.log('Aucun utilisateur local trouvé');
         }
 
-        // 2. Requête GraphQL avec typage correct
+        // 2. Requête GraphQL
         console.log('Envoi de la requête au serveur...');
         const result = await fetchProspecteur({ email: login.email });
 

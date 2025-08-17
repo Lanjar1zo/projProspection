@@ -40,9 +40,9 @@
             <label>Date du prospection</label>
             <div class="calendar-wrapper">
               <ion-datetime
-                presentation="date-time"
+                presentation="date"
                 locale="fr-FR"
-                hour-cycle="h23"
+                v-model="prospection.date"
                 class="improved-datetime"
               ></ion-datetime>
             </div>
@@ -97,7 +97,7 @@ export default defineComponent({
     const router = useRouter();
     const prospection = reactive<IProspection>({
       ID_Prospecteur: parseInt(route.query.ID_Prospecteur as string) || 0,
-      date: new Date(),
+      date: new Date().toISOString(),
     });
     const showToast = async (message: string, color: string = 'success') => {
       const toast = await toastController.create({

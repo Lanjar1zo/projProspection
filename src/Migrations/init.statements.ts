@@ -19,16 +19,12 @@ export const InitStatements = [
             email TEXT UNIQUE NOT NULL,
             tel TEXT NOT NULL,
             password TEXT NOT NULL,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             is_Sync BOOLEAN DEFAULT 0
         );
         CREATE TABLE IF NOT EXISTS Prospection (
             ID_Prospection INTEGER PRIMARY KEY AUTOINCREMENT,
             ID_Prospecteur INTEGER NOT NULL,
             date DATETIME NOT NULL,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             is_Sync BOOLEAN DEFAULT 0,
             FOREIGN KEY (ID_Prospecteur) REFERENCES Prospecteur(ID_Prospecteur)
         );
@@ -42,8 +38,6 @@ export const InitStatements = [
             commune TEXT NOT NULL,
             fokotany TEXT NOT NULL,
             ID_Prospecteur INTEGER NOT NULL,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             is_Sync BOOLEAN DEFAULT 0,
             FOREIGN KEY (ID_Prospecteur) REFERENCES Prospecteur(ID_Prospecteur)
         );
@@ -61,8 +55,6 @@ export const InitStatements = [
             nomRavageur TEXT NOT NULL,
             localisation TEXT NOT NULL,
             ID_Producteur INTEGER NOT NULL,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             is_Sync BOOLEAN DEFAULT 0,
             FOREIGN KEY (ID_Producteur) REFERENCES Producteur(ID_Producteur)
         );
@@ -75,8 +67,6 @@ export const InitStatements = [
             point5 INTEGER NOT NULL,
             tauxInfestation REAL NOT NULL,
             ID_Champs INTEGER NOT NULL,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             is_Sync BOOLEAN DEFAULT 0,
             FOREIGN KEY (ID_Champs) REFERENCES Champs(ID_Champs)
         );
@@ -84,8 +74,6 @@ export const InitStatements = [
             ID_PartiePlante INTEGER PRIMARY KEY AUTOINCREMENT,
             partiePlante TEXT NOT NULL,
             ID_PlanteAttaque INTEGER NOT NULL,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             is_Sync BOOLEAN DEFAULT 0,
             FOREIGN KEY (ID_PlanteAttaque) REFERENCES Plante_Attaque(ID_PlanteAttaque)
         );
@@ -93,8 +81,6 @@ export const InitStatements = [
             ID_Symptome INTEGER PRIMARY KEY AUTOINCREMENT,
             description TEXT NOT NULL,
             ID_PartiePlante INTEGER NOT NULL,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             is_Sync BOOLEAN DEFAULT 0,
             FOREIGN KEY (ID_PartiePlante) REFERENCES Partie_Plante(ID_PartiePlante)
         );
@@ -105,8 +91,6 @@ export const InitStatements = [
             nbrEchantillon INTEGER NOT NULL,
             analyseAFaire TEXT NOT NULL,
             ID_Prospection INTEGER NOT NULL,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             is_Sync BOOLEAN DEFAULT 0,
             FOREIGN KEY (ID_Prospection) REFERENCES Prospection(ID_Prospection)
         );`,

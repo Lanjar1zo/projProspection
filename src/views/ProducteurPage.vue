@@ -190,6 +190,15 @@ export default defineComponent({
 
     const validateAndContinue = async () => {
       try {
+        const cinStr = producteur.cin.toString();
+        if (cinStr.length !== 12) {
+          await showToast(
+            'Le CIN doit contenir exactement 12 chiffres',
+            'danger'
+          );
+          return;
+        }
+
         if (
           !producteur.nomProd ||
           !producteur.cin ||
@@ -206,7 +215,7 @@ export default defineComponent({
 
           if (result) {
             console.log('Partie plante créée avec ID:', result);
-            
+
             const alert = await alertController.create({
               header: 'Enregistrement réussi',
               message: `ID du producteur: ${result}`,
