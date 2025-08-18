@@ -2,7 +2,6 @@ import { gql } from '@apollo/client';
 
 export const PROSPECTEUR = gql`
   mutation (
-    #$ID_Prospecteur: BigInt!
     $nomProspecteur: String!
     $prenProspecteur: String!
     $fonction: String!
@@ -11,7 +10,6 @@ export const PROSPECTEUR = gql`
     $password: String!
   ) {
     createProspecteur(
-      #ID_Prospecteur: $ID_Prospecteur
       nomProspecteur: $nomProspecteur
       prenProspecteur: $prenProspecteur
       fonction: $fonction
@@ -19,8 +17,8 @@ export const PROSPECTEUR = gql`
       tel: $tel
       password: $password
     ) {
-      #ID_Prospecteur
-      nomProspecteur
+      ID_Prospecteur
+      nomProspecteur              
       prenProspecteur
       fonction
       email

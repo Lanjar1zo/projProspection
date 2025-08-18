@@ -73,7 +73,7 @@ class Database implements IDatabase {
   }
 
   // Exécute INSERT/UPDATE/DELETE
-  async executeUpdate(query: string, params: any[] = []): Promise<number> {
+  /*async executeUpdate(query: string, params: any[] = []): Promise<number> {
     const result = await this.db.run(query, params);
 
     if (
@@ -84,6 +84,26 @@ class Database implements IDatabase {
       return result.changes.lastId;
     } else {
       throw new Error(`Database.executeUpdate: lastId not returned`);
+    }
+  }*/
+
+  async executeUpdate(query: string, params: any[] = []): Promise<number> {
+    if (!this.db) {
+      throw new Error(
+        'Database not initialized. Call initializeDatabase() first.'
+      );
+    }
+
+    try {
+      const result = await this.db.run(query, params);
+      if (result.changes?.lastId !== undefined) {
+        return result.changes.lastId;
+      } else {
+        throw new Error('No lastId returned (possible query failure)');
+      }
+    } catch (error) {
+      console.error('SQL Error in executeUpdate:', query, params);
+      throw error;
     }
   }
 }

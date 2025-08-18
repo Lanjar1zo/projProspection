@@ -13,10 +13,11 @@ export class GestionProspecteur {
   async create(prospecteur: IProspecteur): Promise<number> {
     const query = `
             INSERT INTO Prospecteur 
-            (nomProspecteur, prenProspecteur, fonction, email, tel, password) 
-            VALUES (?, ?, ?, ?, ?, ?)
+            (ID_Prospecteur, nomProspecteur, prenProspecteur, fonction, email, tel, password) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         `;
     const params = [
+      prospecteur.ID_Prospecteur,
       prospecteur.nomProspecteur,
       prospecteur.prenProspecteur,
       prospecteur.fonction,
