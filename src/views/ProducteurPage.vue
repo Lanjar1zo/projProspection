@@ -191,51 +191,44 @@ export default defineComponent({
 
     const validateAndContinue = async () => {
       try {
-        const cinStr = producteur.cin.toString();
-        if (cinStr.length !== 12) {
-          await showToast(
-            'Le CIN doit contenir exactement 12 chiffres',
-            'danger'
-          );
-          producteur.cin = 0;
+        if (
+          !producteur.nomProd ||
+          !producteur.cin ||
+          !producteur.fokotany ||
+          !producteur.commune ||
+          !producteur.district ||
+          !producteur.region
+        ) {
+          await showToast('Veuillez remplir tous les champs obligatoires');
+        } else if (producteur.cin.toString().length != 12) {
+          await showToast('Le CIN doit contenir 12 chiffres.');
         } else {
-          if (
-            !producteur.nomProd ||
-            !producteur.cin ||
-            !producteur.fokotany ||
-            !producteur.commune ||
-            !producteur.district ||
-            !producteur.region
-          ) {
-            console.error('Veuillez remplir tous les champs obligatoires');
-          } else {
-            const producteurService = new Producteur();
-            const result = await producteurService.create(producteur);
+          const producteurService = new Producteur();
+          const result = await producteurService.create(producteur);
 
-            if (result) {
-              console.log('Partie plante créée avec ID:', result);
+          if (result) {
+            console.log('Partie plante créée avec ID:', result);
 
-              const alert = await alertController.create({
-                header: 'Enregistrement réussi',
-                message: `ID du producteur: ${result}`,
-                buttons: [
-                  {
-                    text: 'Continuer',
-                    handler: () => {
-                      router.push({
-                        path: '/champs',
-                        query: { ID_Producteur: result.toString() },
-                      });
-                    },
+            const alert = await alertController.create({
+              header: 'Enregistrement réussi',
+              message: `ID du producteur: ${result}`,
+              buttons: [
+                {
+                  text: 'Continuer',
+                  handler: () => {
+                    router.push({
+                      path: '/champs',
+                      query: { ID_Producteur: result.toString() },
+                    });
                   },
-                ],
-              });
+                },
+              ],
+            });
 
-              await alert.present();
-              await showToast('Enregistrement réussi');
-            } else {
-              throw new Error('Echec de la création.');
-            }
+            await alert.present();
+            await showToast('Enregistrement réussi');
+          } else {
+            throw new Error('Echec de la création.');
           }
         }
       } catch (error) {
