@@ -99,6 +99,7 @@ export default defineComponent({
       ID_Prospecteur: parseInt(route.query.ID_Prospecteur as string) || 0,
       date: new Date().toISOString(),
     });
+
     const showToast = async (message: string, color: string = 'success') => {
       const toast = await toastController.create({
         message,
@@ -130,7 +131,7 @@ export default defineComponent({
                   router.push({
                     path: '/producteur',
                     query: {
-                      ID_Prospection: result.toString(),
+                      ID_Prospecteur: prospection.ID_Prospecteur,
                     },
                   });
                 },

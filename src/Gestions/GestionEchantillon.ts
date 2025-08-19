@@ -4,12 +4,22 @@ import SQLiteService from '@/services/SQLiteService';
 
 export class GestionEchantillon {
   private db: Database;
+  private isInitialized = false;
 
   constructor() {
     this.db = new Database(new SQLiteService());
   }
 
+  private async ensureInitialized(): Promise<void> {
+    if (!this.isInitialized) {
+      await this.db.initializeDatabase();
+      this.isInitialized = true;
+    }
+  }
+
   async create(echantillon: IEchantillon): Promise<number> {
+    await this.ensureInitialized();
+
     const query = `
             INSERT INTO Echantillon
             (nature, poids, nbrEchantillon, analyseAFaire, ID_Prospection) 

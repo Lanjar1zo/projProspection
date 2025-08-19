@@ -126,7 +126,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import {
   IonPage,
   IonHeader,
@@ -166,6 +166,7 @@ export default defineComponent({
     IonButton,
   },
   setup() {
+    const route = useRoute();
     const router = useRouter();
     const producteur = reactive<IProducteur>({
       nomProd: '',
@@ -175,7 +176,7 @@ export default defineComponent({
       district: '',
       commune: '',
       fokotany: '',
-      ID_Prospecteur: 0,
+      ID_Prospecteur: parseInt(route.query.ID_Prospecteur as string) || 0,
     });
 
     const showToast = async (message: string, color: string = 'success') => {
@@ -196,46 +197,45 @@ export default defineComponent({
             'Le CIN doit contenir exactement 12 chiffres',
             'danger'
           );
-          return;
-        }
-
-        if (
-          !producteur.nomProd ||
-          !producteur.cin ||
-          !producteur.fokotany ||
-          !producteur.commune ||
-          !producteur.district ||
-          !producteur.region
-        ) {
-          console.error('Veuillez remplir tous les champs obligatoires');
-          return;
+          producteur.cin = 0;
         } else {
-          const producteurService = new Producteur();
-          const result = await producteurService.create(producteur);
-
-          if (result) {
-            console.log('Partie plante créée avec ID:', result);
-
-            const alert = await alertController.create({
-              header: 'Enregistrement réussi',
-              message: `ID du producteur: ${result}`,
-              buttons: [
-                {
-                  text: 'Continuer',
-                  handler: () => {
-                    router.push({
-                      path: '/champs',
-                      query: { ID_Producteur: result.toString() },
-                    });
-                  },
-                },
-              ],
-            });
-
-            await alert.present();
-            await showToast('Enregistrement réussi');
+          if (
+            !producteur.nomProd ||
+            !producteur.cin ||
+            !producteur.fokotany ||
+            !producteur.commune ||
+            !producteur.district ||
+            !producteur.region
+          ) {
+            console.error('Veuillez remplir tous les champs obligatoires');
           } else {
-            throw new Error('Echec de la création.');
+            const producteurService = new Producteur();
+            const result = await producteurService.create(producteur);
+
+            if (result) {
+              console.log('Partie plante créée avec ID:', result);
+
+              const alert = await alertController.create({
+                header: 'Enregistrement réussi',
+                message: `ID du producteur: ${result}`,
+                buttons: [
+                  {
+                    text: 'Continuer',
+                    handler: () => {
+                      router.push({
+                        path: '/champs',
+                        query: { ID_Producteur: result.toString() },
+                      });
+                    },
+                  },
+                ],
+              });
+
+              await alert.present();
+              await showToast('Enregistrement réussi');
+            } else {
+              throw new Error('Echec de la création.');
+            }
           }
         }
       } catch (error) {

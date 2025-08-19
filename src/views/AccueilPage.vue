@@ -17,11 +17,12 @@
 
     <ion-content class="auth-content">
       <div class="auth-wrapper">
+        <input type="hidden" id="Id_prospecteur" :value="prospecteurId" />
+
         <ion-grid class="compact-grid">
-          <!-- Votre contenu existant reste inchangé -->
           <ion-row class="compact-row">
             <ion-col size="12" size-md="6" class="compact-col">
-              <ion-card @click="goTo('Prospection')" class="square-card">
+              <ion-card @click="goToProspection" class="square-card">
                 <ion-card-header>
                   <ion-card-title>Nouvelle Prospection</ion-card-title>
                   <ion-card-subtitle
@@ -116,8 +117,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { defineComponent, onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import {
   arrowBack,
   document,
@@ -175,26 +176,47 @@ export default defineComponent({
     IonButton,
   },
   setup() {
+    const route = useRoute();
     const router = useRouter();
     const pendingSync = ref(false);
+    const prospecteurId = ref<string | null>(null);
 
     const contactNous = ref(false);
     const ouvrirContactNous = () => {
       contactNous.value = true;
     };
+
     const goTo = (routeName: string) => {
       router.push({ name: routeName });
     };
 
     const goToLogin = () => {
-      router.replace('/alogin');
+      router.replace('/login');
+    };
+
+    onMounted(() => {
+      prospecteurId.value = route.query.ID_Prospecteur?.toString() || null;
+    });
+
+    const goToProspection = () => {
+      if (!prospecteurId.value) {
+        console.error('ID Prospecteur non trouvé');
+        return;
+      }
+
+      router.push({
+        path: '/prospection',
+        query: { ID_Prospecteur: prospecteurId.value },
+      });
     };
 
     return {
+      prospecteurId,
       document,
       people,
       sync,
       pendingSync,
+      goToProspection,
       goTo,
       goToLogin,
       arrowBack,

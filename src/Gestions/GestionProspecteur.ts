@@ -4,13 +4,23 @@ import SQLiteService from '@/services/SQLiteService';
 
 export class GestionProspecteur {
   private db: Database;
+  private isInitialized = false;
 
   constructor() {
     this.db = new Database(new SQLiteService());
   }
 
+  private async ensureInitialized(): Promise<void> {
+    if (!this.isInitialized) {
+      await this.db.initializeDatabase();
+      this.isInitialized = true;
+    }
+  }
+
   // Créer un nouveau prospecteur
   async create(prospecteur: IProspecteur): Promise<number> {
+    await this.ensureInitialized();
+
     const query = `
             INSERT INTO Prospecteur 
             (ID_Prospecteur, nomProspecteur, prenProspecteur, fonction, email, tel, password) 
@@ -25,7 +35,15 @@ export class GestionProspecteur {
       prospecteur.tel,
       prospecteur.password,
     ];
-    return this.db.executeUpdate(query, params);
+
+    //return this.db.executeUpdate(query, params);
+
+    try {
+      return await this.db.executeUpdate(query, params);
+    } catch (error) {
+      console.error('Error in GestionProspecteur.create:', error);
+      throw error;
+    }
   }
 
   // Récupérer tous les prospecteurs

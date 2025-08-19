@@ -96,7 +96,18 @@ export default defineComponent({
       password: '',
     });
 
-    const { refetch: fetchProspecteur } = useQuery<{
+    const { refetch: fetchProspecteur } = useQuery(
+      LOGIN,
+      () => ({
+        email: login.email,
+      }),
+      {
+        enabled: false,
+        fetchPolicy: 'network-only',
+      }
+    );
+
+    /*const { refetch: fetchProspecteur } = useQuery<{
       prospecteurByEmail: {
         ID_Prospecteur: number;
         nomProspecteur: string;
@@ -115,7 +126,7 @@ export default defineComponent({
         enabled: false,
         fetchPolicy: 'network-only',
       }
-    );
+    );*/
 
     const gestionLogin = new GestionLogin();
     const gestionProspecteur = new GestionProspecteur();

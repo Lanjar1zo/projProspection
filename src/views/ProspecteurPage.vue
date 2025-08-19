@@ -135,6 +135,7 @@ import { useMutation } from '@vue/apollo-composable';
 import { PROSPECTEUR } from '@/Apollo/requetes';
 import { GestionLogin } from '@/Gestions/GestionLogin';
 import { GestionProspecteur } from '@/Gestions/GestionProspecteur';
+import { Preferences } from '@capacitor/preferences';
 
 export default defineComponent({
   name: 'ProspecteurPage',
@@ -227,6 +228,7 @@ export default defineComponent({
                     query: {
                       ID_Prospecteur:
                         createdProspecteur.ID_Prospecteur.toString(),
+                      fromCreation: 'true',
                     },
                   });
                 },

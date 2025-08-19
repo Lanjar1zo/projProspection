@@ -4,12 +4,21 @@ import SQLiteService from '@/services/SQLiteService';
 
 export class GestionSymptome {
   private db: Database;
+  private isInitialized = false;
 
   constructor() {
     this.db = new Database(new SQLiteService());
   }
 
+  private async ensureInitialized(): Promise<void> {
+    if (!this.isInitialized) {
+      await this.db.initializeDatabase();
+      this.isInitialized = true;
+    }
+  }
   async create(symptome: ISymptome): Promise<number> {
+    await this.ensureInitialized();
+
     const query = `
             INSERT INTO Symptome
             (description, ID_PartiePlante) 
