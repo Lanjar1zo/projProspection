@@ -11,11 +11,12 @@ export class GestionProspecteur {
 
   // Créer un nouveau prospecteur
   async create(prospecteur: IProspecteur): Promise<number> {
+    await this.db.initializeDatabase();
     const query = `
-            INSERT INTO Prospecteur 
-            (ID_Prospecteur, nomProspecteur, prenProspecteur, fonction, email, tel, password) 
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        `;
+      INSERT INTO Prospecteur 
+      (ID_Prospecteur, nomProspecteur, prenProspecteur, fonction, email, tel, password) 
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `;
     const params = [
       prospecteur.ID_Prospecteur,
       prospecteur.nomProspecteur,
@@ -30,12 +31,14 @@ export class GestionProspecteur {
 
   // Récupérer tous les prospecteurs
   async findAll(): Promise<IProspecteur[]> {
+    await this.db.initializeDatabase();
     const query = 'SELECT * FROM Prospecteur ORDER BY nomProspecteur';
     return this.db.executeQuery(query);
   }
 
   // Trouver un prospecteur par son ID
   async findById(id: number): Promise<IProspecteur | null> {
+    await this.db.initializeDatabase();
     const query = 'SELECT * FROM Prospecteur WHERE ID_Prospecteur = ? LIMIT 1';
     const results = await this.db.executeQuery(query, [id]);
     return results[0] || null;
@@ -79,6 +82,7 @@ export class GestionProspecteur {
     }
 
     params.push(id);
+    await this.db.initializeDatabase();
     const query = `UPDATE Prospecteur SET ${fields.join(
       ', '
     )} WHERE ID_Prospecteur = ?`;
@@ -87,13 +91,22 @@ export class GestionProspecteur {
 
   // Supprimer un prospecteur
   async delete(id: number): Promise<number> {
+    await this.db.initializeDatabase();
     const query = 'DELETE FROM Prospecteur WHERE ID_Prospecteur = ?';
     return this.db.executeUpdate(query, [id]);
   }
 
   async findByEmail(email: string): Promise<IProspecteur | null> {
-    const query = 'SELECT * FROM Prospecteur WHERE email = ? LIMIT 1';
-    const results = await this.db.executeQuery(query, [email]);
-    return results[0] || null;
+    try {
+      await this.db.initializeDatabase();
+      const query = 'SELECT * FROM Prospecteur WHERE email = ? LIMIT 1';
+      const results = await this.db.executeQuery(query, [email]);
+      console.log(results, email);
+      const all = await this.findAll()
+      console.log(all);
+      return results[0] || null;
+    } catch (error) {
+      throw `findByEmail: ${error}`
+    }
   }
 }

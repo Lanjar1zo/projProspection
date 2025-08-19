@@ -6,16 +6,16 @@ import { SQLiteDBConnection } from '@capacitor-community/sqlite';
 import { InitStatements } from '@/Migrations/init.statements';
 
 export interface IDatabase {
-  initializeDatabase(): Promise<void>;
-  getDatabaseName(): string;
-  executeQuery(query: string, params: any[]): Promise<any[]>;
-  executeUpdate(query: string, params: any[]): Promise<number>;
-  getDatabaseVersion(): number;
-}
+  initializeDatabase(): Promise<void>
+  getDatabaseName(): string
+  executeQuery(query: string, params?: any[]): Promise<any[]|undefined>
+  executeUpdate(query: string, params: any[]): Promise<number>
+  getDatabaseVersion(): number
+};
 
 class Database implements IDatabase {
   migrationBase = InitStatements;
-  loadToVersion = InitStatements[InitStatements.length - 1].toVersion;
+  loadToVersion = InitStatements[InitStatements.length-1].toVersion;
   db!: SQLiteDBConnection;
   sqliteServ!: ISQLiteService;
   isInitCompleted = new BehaviorSubject(false);
@@ -25,8 +25,7 @@ class Database implements IDatabase {
 
   constructor(sqliteService: ISQLiteService) {
     this.sqliteServ = sqliteService;
-    this.platform =
-      this.appInstance?.appContext.config.globalProperties.$platform;
+    this.platform = this.appInstance?.appContext.config.globalProperties.$platform;
   }
 
   getDatabaseName(): string {
@@ -35,37 +34,38 @@ class Database implements IDatabase {
 
   getDatabaseVersion(): number {
     return this.loadToVersion;
-  }
+}
 
   async initializeDatabase(): Promise<void> {
     // create upgrade statements
     try {
-      await this.sqliteServ.addUpgradeStatement({
-        database: this.database,
-        upgrade: this.migrationBase,
-      });
-      this.db = await this.sqliteServ.openDatabase(
-        this.database,
-        this.loadToVersion,
-        false
-      );
-      const isData = await this.db.query('select * from sqlite_sequence');
-      if (isData.values!.length === 0) {
+      await this.sqliteServ.addUpgradeStatement({database: this.database, upgrade: this.migrationBase})
+        .then(() => {
+          console.log('addUpgradeStatement success');
+        });
+      this.db = await this.sqliteServ.openDatabase(this.database, this.loadToVersion, false);
+      const isData = await this.db.query("select * from sqlite_sequence");
+      if(isData.values!.length === 0) {
         // create database initial users if any
+
       }
 
       this.isInitCompleted.next(true);
-    } catch (error: any) {
+    } catch(error: any) {
       const msg = error.message ? error.message : error;
       throw new Error(`storageService.initializeDatabase: ${msg}`);
     }
   }
 
   // Exécute une requête SELECT
-  async executeQuery(query: string, params: any[] = []): Promise<any[]> {
+  async executeQuery(query: string, params?: any[]): Promise<any[]|undefined> {
     try {
+      if (!(await this.db.isDBOpen()).result) {
+        await this.db.open();
+      }
       const result = await this.db.query(query, params);
-      return result.values || [];
+      await this.db.close();
+      return result.values;
     } catch (error) {
       console.error('Erreur executeQuery:', query);
       throw new Error(`Database.executeQuery: ${error}`);
@@ -73,38 +73,19 @@ class Database implements IDatabase {
   }
 
   // Exécute INSERT/UPDATE/DELETE
-  /*async executeUpdate(query: string, params: any[] = []): Promise<number> {
+  async executeUpdate(query: string, params: any[] = []): Promise<number> {
+    console.log(this.db);
+    if (!(await this.db.isDBOpen()).result) {
+      await this.db.open();
+    }
     const result = await this.db.run(query, params);
-
-    if (
-      result.changes !== undefined &&
-      result.changes.lastId !== undefined &&
-      result.changes.lastId > 0
-    ) {
+    await this.db.close();
+    if (result.changes !== undefined && result.changes.lastId !== undefined && result.changes.lastId > 0) {
       return result.changes.lastId;
     } else {
       throw new Error(`Database.executeUpdate: lastId not returned`);
     }
-  }*/
-
-  async executeUpdate(query: string, params: any[] = []): Promise<number> {
-    if (!this.db) {
-      throw new Error(
-        'Database not initialized. Call initializeDatabase() first.'
-      );
-    }
-
-    try {
-      const result = await this.db.run(query, params);
-      if (result.changes?.lastId !== undefined) {
-        return result.changes.lastId;
-      } else {
-        throw new Error('No lastId returned (possible query failure)');
-      }
-    } catch (error) {
-      console.error('SQL Error in executeUpdate:', query, params);
-      throw error;
-    }
   }
+
 }
 export default Database;

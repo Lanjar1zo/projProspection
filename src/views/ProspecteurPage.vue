@@ -128,6 +128,8 @@ import {
   IonButton,
   toastController,
   alertController,
+  IonIcon,
+  IonButtons
 } from '@ionic/vue';
 
 import { arrowBack } from 'ionicons/icons';
@@ -135,6 +137,10 @@ import { useMutation } from '@vue/apollo-composable';
 import { PROSPECTEUR } from '@/Apollo/requetes';
 import { GestionLogin } from '@/Gestions/GestionLogin';
 import { GestionProspecteur } from '@/Gestions/GestionProspecteur';
+
+import { getCurrentInstance } from 'vue';
+import { Prospecteur } from '@/Model/Prospecteur';
+import { Login } from '@/Model/Login';
 
 export default defineComponent({
   name: 'ProspecteurPage',
@@ -147,6 +153,8 @@ export default defineComponent({
     IonList,
     IonInput,
     IonButton,
+    IonIcon,
+    IonButtons
   },
   setup() {
     const router = useRouter();
@@ -158,6 +166,10 @@ export default defineComponent({
       tel: '',
       password: '',
     });
+
+    const appInstance = getCurrentInstance();
+    const prospecteurModel = new Prospecteur(appInstance);
+    const loginModel = new Login(appInstance);
 
     const { mutate: createProspecteur } = useMutation(PROSPECTEUR);
     const gestionLogin = new GestionLogin();
@@ -200,12 +212,13 @@ export default defineComponent({
         if (result?.data?.createProspecteur) {
           const createdProspecteur = result.data.createProspecteur;
 
-          await gestionLogin.create({
+          // insert in local
+          await loginModel.create({
             email: createdProspecteur.email,
             password: createdProspecteur.password,
           });
 
-          await gestionProspecteur.create({
+          await prospecteurModel.create({
             ID_Prospecteur: createdProspecteur.ID_Prospecteur,
             nomProspecteur: createdProspecteur.nomProspecteur,
             prenProspecteur: createdProspecteur.prenProspecteur,
