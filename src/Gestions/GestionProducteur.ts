@@ -4,12 +4,21 @@ import SQLiteService from '@/services/SQLiteService';
 
 export class GestionProducteur {
   private db: Database;
-
+  private isInitialized = false;
   constructor() {
     this.db = new Database(new SQLiteService());
   }
 
+  private async ensureInitialized(): Promise<void> {
+    if (!this.isInitialized) {
+      await this.db.initializeDatabase();
+      this.isInitialized = true;
+    }
+  }
+
   async create(producteur: IProducteur): Promise<number> {
+    await this.ensureInitialized();
+
     const query = `
             INSERT INTO Producteur
             (nomProd, cin, partenaire, fokotany, commune, district, region, ID_Prospecteur) 

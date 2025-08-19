@@ -4,12 +4,22 @@ import SQLiteService from '@/services/SQLiteService';
 
 export class GestionPlante_attaque {
   private db: Database;
+  private isInitialized = false;
 
   constructor() {
     this.db = new Database(new SQLiteService());
   }
 
+  private async ensureInitialized(): Promise<void> {
+    if (!this.isInitialized) {
+      await this.db.initializeDatabase();
+      this.isInitialized = true;
+    }
+  }
+
   async create(pa: IPlante_attaque): Promise<number> {
+    await this.ensureInitialized();
+
     const query = `
             INSERT INTO Plante_Attaque
             (point1, point2, point3, point4, point5, tauxInfestation, ID_Champs) 
@@ -86,6 +96,4 @@ export class GestionPlante_attaque {
     const query = 'DELETE FROM Plante_Attaque WHERE ID_PlanteAttaque = ?';
     return this.db.executeUpdate(query, [id]);
   }
-
-  
 }

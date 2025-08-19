@@ -4,12 +4,22 @@ import SQLiteService from '@/services/SQLiteService';
 
 export class GestionPartie_plante {
   private db: Database;
+  private isInitialized = false;
 
   constructor() {
     this.db = new Database(new SQLiteService());
   }
 
+  private async ensureInitialized(): Promise<void> {
+    if (!this.isInitialized) {
+      await this.db.initializeDatabase();
+      this.isInitialized = true;
+    }
+  }
+
   async create(champs: IPartie_plante): Promise<number> {
+    await this.ensureInitialized();
+
     const query = `
             INSERT INTO Partie_Plante
             (partiePlante, ID_PlanteAttaque) 

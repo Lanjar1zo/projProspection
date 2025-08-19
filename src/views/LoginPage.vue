@@ -100,17 +100,7 @@ export default defineComponent({
     const prospecteurModel = new Prospecteur(appInstance);
     const loginModel = new Login(appInstance);
 
-    /*const { refetch: fetchProspecteur } = useQuery<{
-      prospecteurByEmail: {
-        ID_Prospecteur: number;
-        nomProspecteur: string;
-        prenProspecteur: string;
-        fonction: string;
-        email: string;
-        tel: string;
-        password: string;
-      };
-    }>(
+    const { refetch: fetchProspecteur } = useQuery(
       LOGIN,
       () => ({
         email: login.email,
@@ -119,8 +109,7 @@ export default defineComponent({
         enabled: false,
         fetchPolicy: 'network-only',
       }
-    );*/
-
+    );
 
     const showToast = async (message: string, color = 'danger') => {
       const toast = await toastController.create({
