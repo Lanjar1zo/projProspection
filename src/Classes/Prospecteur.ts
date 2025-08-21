@@ -1,4 +1,4 @@
-import { GestionProspecteur } from '@/Gestions/GestionProspecteur';
+/*import { GestionProspecteur } from '@/Gestions/GestionProspecteur';
 import { IProspecteur } from '@/Interfaces/IProspecteur';
 
 export default class Prospecteur {
@@ -43,4 +43,4 @@ export default class Prospecteur {
   ): Promise<IProspecteur | null> {
     return this.gp.authenticate(email, password);
   }
-}
+}*/

@@ -185,7 +185,7 @@
               </div>
             </div>
 
-            <input type="hidden" v-model="champs.ID_Producteur" />
+            <input type="" v-model="champs.ID_Producteur" />
           </ion-list>
 
           <!-- Bouton unique -->
@@ -204,7 +204,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, computed, ref } from 'vue';
+import {
+  defineComponent,
+  reactive,
+  computed,
+  ref,
+  getCurrentInstance,
+} from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { location } from 'ionicons/icons';
 import {
@@ -225,7 +231,7 @@ import {
   alertController,
 } from '@ionic/vue';
 import { Geolocation } from '@capacitor/geolocation';
-import Champs from '@/Classes/Champs';
+import { Champs } from '@/Model/Champs';
 import { IChamps } from '@/Interfaces/IChamps';
 
 export default defineComponent({
@@ -249,7 +255,6 @@ export default defineComponent({
     const route = useRoute();
     const router = useRouter();
     const champs = reactive<IChamps>({
-      ID_Champs: 0,
       culture: '',
       variete: '',
       supTotal: 0,
@@ -265,6 +270,8 @@ export default defineComponent({
     });
 
     const locationLoading = ref(false);
+    const appInstance = getCurrentInstance();
+    const champsModel = new Champs(appInstance);
 
     const showSuccessToast = async () => {
       const toast = await toastController.create({
@@ -329,19 +336,36 @@ export default defineComponent({
           return;
         }
 
-        const champsService = new Champs();
-        const result = await champsService.create(champs);
+        if (!champs.ID_Producteur || champs.ID_Producteur <= 0) {
+          await showErrorToast('ID Producteur invalide');
+          console.error('ID_Producteur invalide:', champs.ID_Producteur);
+          return;
+        }
+
+        const result = await champsModel.create({
+          culture: champs.culture,
+          variete: champs.variete,
+          supTotal: champs.supTotal,
+          supInfecte: champs.supInfecte,
+          dateSemi: champs.dateSemi,
+          irrigation: champs.irrigation,
+          engrai: champs.engrai,
+          stadeCroissance: champs.stadeCroissance,
+          santeGle: champs.santeGle,
+          nomRavageur: champs.nomRavageur,
+          localisation: champs.localisation,
+          ID_Producteur: champs.ID_Producteur,
+        });
 
         if (result) {
           console.log('Champ créé avec succès, ID:', result);
-          await showSuccessToast();
-          
+
           const alert = await alertController.create({
             header: 'Succès',
             message: `Champ créé avec l'ID: ${result}`,
             buttons: [
               {
-                text: 'OK',
+                text: 'Continuer',
                 handler: () => {
                   router.push({
                     path: '/plante-attaque',
@@ -353,6 +377,7 @@ export default defineComponent({
           });
 
           await alert.present();
+          await showSuccessToast();
         } else {
           await showErrorToast('Échec de la création du champ');
           console.error('Échec de la création du champ');

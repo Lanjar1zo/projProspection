@@ -19,7 +19,6 @@ export const InitStatements = [
             email TEXT UNIQUE NOT NULL,
             tel TEXT NOT NULL,
             password TEXT NOT NULL,
-            is_Sync BOOLEAN DEFAULT 0
         );
         CREATE TABLE IF NOT EXISTS Prospection (
             ID_Prospection INTEGER PRIMARY KEY AUTOINCREMENT,

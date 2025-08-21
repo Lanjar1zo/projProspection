@@ -107,6 +107,9 @@
                 ></ion-input>
               </div>
             </div>
+
+            <!-- Id_Prospecteur -->
+            <input type="" v-model="producteur.ID_Prospecteur" />
           </ion-list>
 
           <!-- Bouton unique de validation et redirection -->
@@ -125,7 +128,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue';
+import { defineComponent, getCurrentInstance, reactive } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import {
   IonPage,
@@ -139,19 +142,9 @@ import {
   toastController,
   alertController,
 } from '@ionic/vue';
-import Producteur from '@/Classes/Producteur';
 import { arrowBack } from 'ionicons/icons';
-
-interface IProducteur {
-  nomProd: string;
-  cin: number;
-  partenaire: string;
-  region: string;
-  district: string;
-  commune: string;
-  fokotany: string;
-  ID_Prospecteur: number;
-}
+import IProducteur from '@/Interfaces/IProducteur';
+import { Producteur } from '@/Model/Producteur';
 
 export default defineComponent({
   name: 'ProducteurPage',
@@ -179,6 +172,9 @@ export default defineComponent({
       ID_Prospecteur: parseInt(route.query.ID_Prospecteur as string) || 0,
     });
 
+    const appInstance = getCurrentInstance();
+    const producteurModel = new Producteur(appInstance);
+
     const showToast = async (message: string, color: string = 'success') => {
       const toast = await toastController.create({
         message,
@@ -203,11 +199,19 @@ export default defineComponent({
         } else if (producteur.cin.toString().length != 12) {
           await showToast('Le CIN doit contenir 12 chiffres.');
         } else {
-          const producteurService = new Producteur();
-          const result = await producteurService.create(producteur);
+          const result = await producteurModel.create({
+            nomProd: producteur.nomProd,
+            cin: producteur.cin,
+            partenaire: producteur.partenaire,
+            region: producteur.region,
+            district: producteur.district,
+            commune: producteur.commune,
+            fokotany: producteur.fokotany,
+            ID_Prospecteur: producteur.ID_Prospecteur,
+          });
 
           if (result) {
-            console.log('Partie plante créée avec ID:', result);
+            console.log('Producteur créée avec ID:', result);
 
             const alert = await alertController.create({
               header: 'Enregistrement réussi',
@@ -235,7 +239,6 @@ export default defineComponent({
         console.error('Erreur:', error);
         await showToast("Erreur lors de l'enregistrement", 'danger');
       }
-      router.push('/champs');
     };
 
     const goTo = () => {

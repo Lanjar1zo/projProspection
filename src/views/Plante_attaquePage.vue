@@ -125,20 +125,7 @@
               </div>
             </div>
 
-            <!-- ID du Champ 
-            <div class="input-group">
-              <label>ID du Champ</label>
-              <div class="input-wrapper">
-                <ion-input
-                  type="number"
-                  v-model.number="planteAttaque.ID_Champs"
-                  placeholder="Entrez l'ID du champ"
-                  required
-                ></ion-input>
-              </div>
-            </div> -->
-
-            <input type="hidden" v-model="planteAttaque.ID_Champs" />
+            <input type="" v-model="planteAttaque.ID_Champs" />
           </ion-list>
 
           <!-- Bouton unique -->
@@ -157,7 +144,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, computed } from 'vue';
+import { defineComponent, reactive, computed, getCurrentInstance } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import {
   IonPage,
@@ -173,7 +160,7 @@ import {
   alertController,
 } from '@ionic/vue';
 import { IPlante_attaque } from '@/Interfaces/IPlante_attaque';
-import Plante_attaque from '@/Classes/Plante_attaque';
+import { Plante_Attaque } from '@/Model/Plante_attaque';
 import { arrowBack } from 'ionicons/icons';
 
 export default defineComponent({
@@ -202,6 +189,9 @@ export default defineComponent({
       tauxInfestation: 0,
       ID_Champs: parseInt(route.query.ID_Champs as string) || 0,
     });
+
+    const appInstance = getCurrentInstance();
+    const planteAttaqueModel = new Plante_Attaque(appInstance);
 
     const updateTauxInfestation = () => {
       planteAttaque.tauxInfestation =
@@ -248,8 +238,15 @@ export default defineComponent({
         // Calcul du taux d'infestation
         updateTauxInfestation();
 
-        const planteAttaqueService = new Plante_attaque();
-        const result = await planteAttaqueService.create(planteAttaque);
+        const result = await planteAttaqueModel.create({
+          point1: planteAttaque.point1,
+          point2: planteAttaque.point2,
+          point3: planteAttaque.point3,
+          point4: planteAttaque.point4,
+          point5: planteAttaque.point5,
+          tauxInfestation: planteAttaque.tauxInfestation,
+          ID_Champs: planteAttaque.ID_Champs,
+        });
 
         if (result) {
           console.log('Évaluation créée avec ID:', result);
@@ -257,10 +254,8 @@ export default defineComponent({
           const alert = await alertController.create({
             header: 'Évaluation enregistrée',
             message: `
-              <div style="text-align: center;">
-                <p><strong>ID:</strong> ${result}</p>
-                <p><strong>Taux d'infestation:</strong> ${planteAttaque.tauxInfestation}%</p>
-              </div>
+                ID: ${result}
+                Taux d'infestation: ${planteAttaque.tauxInfestation}%
             `,
             buttons: [
               {

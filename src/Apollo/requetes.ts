@@ -18,7 +18,7 @@ export const PROSPECTEUR = gql`
       password: $password
     ) {
       ID_Prospecteur
-      nomProspecteur              
+      nomProspecteur
       prenProspecteur
       fonction
       email
@@ -64,13 +64,13 @@ export const PRODUCTEUR = gql`
   mutation (
     $ID_Producteur: BigInt!
     $nomProd: String!
-    $cin: Int!
+    $cin: BigInt!
     $partenaire: String
     $region: String!
     $district: String!
     $commune: String!
     $fokotany: String!
-    $ID_Pospecteur: BigInt!
+    $ID_Prospecteur: BigInt!
   ) {
     createProducteur(
       ID_Producteur: $ID_Producteur
@@ -81,7 +81,7 @@ export const PRODUCTEUR = gql`
       district: $district
       commune: $commune
       fokotany: $fokotany
-      ID_Pospecteur: $ID_Pospecteur
+      ID_Prospecteur: $ID_Prospecteur
     ) {
       ID_Producteur
       nomProd
@@ -91,7 +91,7 @@ export const PRODUCTEUR = gql`
       district
       commune
       fokotany
-      ID_Pospecteur
+      ID_Prospecteur
     }
   }
 `;

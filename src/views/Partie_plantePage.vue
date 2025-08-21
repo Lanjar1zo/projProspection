@@ -18,17 +18,6 @@
     <ion-content class="auth-content">
       <div class="auth-wrapper">
         <div class="form-container">
-          <!-- <div class="input-group">
-            <label>Plante attaqué numero</label>
-            <div class="input-wrapper">
-              <ion-input
-                type="number"
-                v-model.number="partiePlante.ID_PlanteAttaque"
-                placeholder="Numero du plante attaqué"
-              ></ion-input>
-            </div>
-          </div> -->
-
           <div class="form-header">
             <h2>Parties affectées</h2>
             <p>Sélectionnez les parties de la plante attaquées</p>
@@ -47,7 +36,7 @@
             </ion-item>
           </ion-list>
 
-          <input type="hidden" v-model="partiePlante.ID_PlanteAttaque" />
+          <input type="" v-model="partiePlante.ID_PlanteAttaque" />
 
           <!-- Bouton unique -->
           <ion-button
@@ -64,7 +53,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, computed } from 'vue';
+import { defineComponent, reactive, computed, getCurrentInstance } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import {
   IonPage,
@@ -80,7 +69,7 @@ import {
   toastController,
   alertController,
 } from '@ionic/vue';
-import Partie_plante from '@/Classes/Partie_plante';
+import { Partie_Plante } from '@/Model/Partie_plante';
 import { IPartie_plante } from '@/Interfaces/IPartie_plante';
 import { arrowBack } from 'ionicons/icons';
 
@@ -101,10 +90,14 @@ export default defineComponent({
   setup() {
     const route = useRoute();
     const router = useRouter();
+
     const partiePlante = reactive<IPartie_plante>({
       partiePlante: [],
       ID_PlanteAttaque: parseInt(route.query.ID_PlanteAttaque as string) || 0,
     });
+
+    const appInstance = getCurrentInstance();
+    const partiePlanteModel = new Partie_Plante(appInstance);
 
     const partiesPlante = [
       { value: 'Racines', label: 'Racines' },
@@ -144,8 +137,10 @@ export default defineComponent({
 
     const validateAndContinue = async () => {
       try {
-        const partiePlanteService = new Partie_plante();
-        const result = await partiePlanteService.create(partiePlante);
+        const result = await partiePlanteModel.create({
+          partiePlante: partiePlante.partiePlante,
+          ID_PlanteAttaque: partiePlante.ID_PlanteAttaque,
+        });
 
         if (result) {
           console.log('Partie plante créée avec ID:', result);

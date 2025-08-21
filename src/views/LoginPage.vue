@@ -123,7 +123,10 @@ export default defineComponent({
 
     const handleLogin = async () => {
       try {
-        console.log('Tentative de connexion:', `${login.email} et ${login.password}`);
+        console.log(
+          'Tentative de connexion:',
+          `${login.email} et ${login.password}`
+        );
 
         // Validation des champs
         if (!login.email || !login.password) {
@@ -138,10 +141,13 @@ export default defineComponent({
         console.log(logins);
 
         // 1. Essai de connexion locale
-        const localLogin = await loginModel.findBy('email',login.email);
+        const localLogin = await loginModel.findBy('email', login.email);
         if (localLogin) {
           if (localLogin?.password == login.password) {
-            const prospecteur = await prospecteurModel.findBy('email',login.email);
+            const prospecteur = await prospecteurModel.findBy(
+              'email',
+              login.email
+            );
             if (prospecteur) {
               console.log('Connexion locale réussie');
               return router.push({
@@ -151,6 +157,8 @@ export default defineComponent({
                 },
               });
             } else {
+              login.email = '';
+              login.password = '';
               console.log('error');
             }
           }
@@ -160,7 +168,6 @@ export default defineComponent({
           login.password = '';
           router.push('/prospecteur');
         }
-
       } catch (err) {
         console.error('Erreur inattendue:', err);
         await showToast('Erreur de connexion');

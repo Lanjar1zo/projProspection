@@ -79,11 +79,15 @@ import {
   IonBadge,
   IonSearchbar,
   IonIcon,
+  IonButton,
+  IonButtons,
 } from '@ionic/vue';
 import { arrowBack, alertCircleOutline, eye } from 'ionicons/icons';
-import Prospection from '@/Classes/Prospection';
-import Prospecteur from '@/Classes/Prospecteur';
-import Echantillon from '@/Classes/Echantillon';
+
+// Importez vos classes Model
+import { Prospection } from '@/Model/Prospection';
+import { Prospecteur } from '@/Model/Prospecteur';
+import { Echantillon } from '@/Model/Echantillon';
 
 // Fonction utilitaire pour formater les nombres sur 2 chiffres
 function padNumber(num: number): string {
@@ -107,6 +111,8 @@ export default defineComponent({
     IonBadge,
     IonSearchbar,
     IonIcon,
+    IonButton,
+    IonButtons,
   },
   setup() {
     const router = useRouter();
@@ -118,16 +124,29 @@ export default defineComponent({
 
     // Charger les données initiales
     onMounted(async () => {
-      const prospectionService = new Prospection();
-      const prospecteurService = new Prospecteur();
-      const echantillonService = new Echantillon();
-
-      prospections.value = await prospectionService.select();
-      prospecteurs.value = await prospecteurService.select();
-      echantillons.value = await echantillonService.select();
-
-      filteredProspections.value = prospections.value;
+      await loadData();
     });
+
+    const loadData = async () => {
+      try {
+        const prospectionModel = new Prospection(null);
+        const prospecteurModel = new Prospecteur(null);
+        const echantillonModel = new Echantillon(null);
+
+        // Utilisez get() au lieu de select()
+        const prospectionData = await prospectionModel.get();
+        const prospecteurData = await prospecteurModel.get();
+        const echantillonData = await echantillonModel.get();
+
+        prospections.value = prospectionData || [];
+        prospecteurs.value = prospecteurData || [];
+        echantillons.value = echantillonData || [];
+
+        filteredProspections.value = prospections.value;
+      } catch (error) {
+        console.error('Erreur lors du chargement des données:', error);
+      }
+    };
 
     // Filtrer par recherche textuelle
     const filterProspections = () => {
@@ -145,28 +164,48 @@ export default defineComponent({
 
     // Formater la date
     const formatDate = (dateString: string | Date) => {
-      const date = new Date(dateString);
-      const day = padNumber(date.getDate());
-      const month = padNumber(date.getMonth() + 1);
-      const year = date.getFullYear();
-      return `${day}/${month}/${year}`;
+      try {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) {
+          return 'Date invalide';
+        }
+        const day = padNumber(date.getDate());
+        const month = padNumber(date.getMonth() + 1);
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+      } catch (error) {
+        console.error('Erreur de formatage de date:', error);
+        return 'Date invalide';
+      }
     };
 
     // Nom du prospecteur
     const getProspecteurName = (id: number) => {
-      const prospecteur = prospecteurs.value.find(
-        (p) => p.ID_Prospecteur === id
-      );
-      return prospecteur
-        ? `${prospecteur.nomProspecteur} ${prospecteur.prenProspecteur}`
-        : 'Inconnu';
+      try {
+        const prospecteur = prospecteurs.value.find(
+          (p) => p.ID_Prospecteur === id
+        );
+        return prospecteur
+          ? `${prospecteur.nomProspecteur || ''} ${
+              prospecteur.prenProspecteur || ''
+            }`.trim()
+          : 'Inconnu';
+      } catch (error) {
+        console.error('Erreur lors de la récupération du prospecteur:', error);
+        return 'Inconnu';
+      }
     };
 
     // Compter les échantillons
     const countEchantillons = (prospectionId: number) => {
-      return echantillons.value.filter(
-        (e) => e.ID_Prospection === prospectionId
-      ).length;
+      try {
+        return echantillons.value.filter(
+          (e) => e.ID_Prospection === prospectionId
+        ).length;
+      } catch (error) {
+        console.error('Erreur lors du comptage des échantillons:', error);
+        return 0;
+      }
     };
 
     // Voir les détails

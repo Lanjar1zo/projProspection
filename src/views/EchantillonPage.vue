@@ -86,18 +86,7 @@
               </div>
             </div>
 
-            <!-- <div class="input-group">
-              <label>Prospection numero</label>
-              <div class="input-wrapper">
-                <ion-input
-                  type="number"
-                  v-model.number="echantillon.ID_Prospection"
-                  placeholder="Numero du prospection"
-                ></ion-input>
-              </div>
-            </div> -->
-
-            <input type="hidden" v-model="echantillon.ID_Prospection" />
+            <input type="" v-model="echantillon.ID_Prospection" />
           </ion-list>
 
           <!-- Boutons d'action -->
@@ -126,7 +115,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue';
+import { defineComponent, getCurrentInstance, onMounted, reactive } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import {
   IonPage,
@@ -143,8 +132,9 @@ import {
   alertController,
 } from '@ionic/vue';
 import { IEchantillon } from '@/Interfaces/IEchantillon';
-import Echantillon from '@/Classes/Echantillon';
+import { Echantillon } from '@/Model/Echantillon';
 import { arrowBack } from 'ionicons/icons';
+import { Prospection } from '@/Model/Prospection';
 
 export default defineComponent({
   name: 'EchantillonPage',
@@ -163,14 +153,18 @@ export default defineComponent({
   setup() {
     const route = useRoute();
     const router = useRouter();
-    const echantillonService = new Echantillon();
+
     const echantillon = reactive<IEchantillon>({
       nature: '',
       poids: 0,
       nbrEchantillon: 0,
       analyseAFaire: '',
-      ID_Prospection: parseInt(route.query.ID_Prospection as string) || 0,
+      ID_Prospection: 0,
     });
+
+    const appInstance = getCurrentInstance();
+    const echantillonModel = new Echantillon(appInstance);
+    const prospectionModel = new Prospection(appInstance);
 
     const goTo = () => {
       router.push('/symptome');
@@ -196,6 +190,21 @@ export default defineComponent({
       await toast.present();
     };
 
+    onMounted(async () => {
+      await prospectionId();
+    });
+
+    const prospectionId = async () => {
+      try {
+        const lastId = await prospectionModel.getMaxId('ID_Prospection');
+        if (lastId) {
+          echantillon.ID_Prospection = lastId;
+        }
+      } catch (error) {
+        console.error('Erreur récupération ID_Prospection:', error);
+      }
+    };
+
     const validateAndContinue = async () => {
       try {
         // Validation des valeurs numériques
@@ -204,12 +213,27 @@ export default defineComponent({
           return;
         }
 
-        const id = await echantillonService.create(echantillon);
-        console.log('Échantillon créé avec ID:', id);
+        // Vérifier qu'on a bien un ID_Prospection
+        if (echantillon.ID_Prospection === 0) {
+          await showErrorToast(
+            "Aucune prospection trouvée. Veuillez d'abord créer une prospection."
+          );
+          return;
+        }
+
+        const result = await echantillonModel.create({
+          nature: echantillon.nature,
+          poids: echantillon.poids,
+          nbrEchantillon: echantillon.nbrEchantillon,
+          analyseAFaire: echantillon.analyseAFaire,
+          ID_Prospection: echantillon.ID_Prospection,
+        });
+
+        console.log('Échantillon créé avec ID:', result);
 
         const alert = await alertController.create({
           header: 'Enregistrement réussi',
-          message: `ID de l'échantillon: ${id}`,
+          message: `ID de l'échantillon: ${result}`,
           buttons: [
             {
               text: "Retour à l'accueil",
@@ -230,7 +254,6 @@ export default defineComponent({
 
     const skipEchantillon = () => {
       console.log('Aucun échantillon prélevé');
-      showSuccessToast();
       router.push('/accueil');
     };
 

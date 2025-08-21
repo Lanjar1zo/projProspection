@@ -18,18 +18,7 @@
     <ion-content class="auth-content">
       <div class="auth-wrapper">
         <div class="form-container">
-          <!-- <div class="input-group">
-            <label>Partie plante numero</label>
-            <div class="input-wrapper">
-              <ion-input
-                type="number"
-                v-model.number="symptome.ID_PartiePlante"
-                placeholder="Numero de la partie plante"
-              ></ion-input>
-            </div>
-          </div> -->
-
-          <input type="hidden" v-model="symptome.ID_PartiePlante" />
+          <input type="" v-model="symptome.ID_PartiePlante" />
 
           <div class="form-header">
             <h2>Symptômes observés</h2>
@@ -64,7 +53,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue';
+import { defineComponent, getCurrentInstance, reactive } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import {
   IonPage,
@@ -80,7 +69,7 @@ import {
   toastController,
   alertController,
 } from '@ionic/vue';
-import Symptome from '@/Classes/Symptome';
+import { Symptome } from '@/Model/Symptome';
 import { ISymptome } from '@/Interfaces/ISymptome';
 import { arrowBack } from 'ionicons/icons';
 
@@ -101,10 +90,14 @@ export default defineComponent({
   setup() {
     const route = useRoute();
     const router = useRouter();
+
     const symptome = reactive<ISymptome>({
       description: [] as string[],
       ID_PartiePlante: parseInt(route.query.ID_PartiePlante as string) || 0,
     });
+
+    const appInstance = getCurrentInstance();
+    const symptomeModel = new Symptome(appInstance);
 
     const goToPartiePlante = () => {
       router.push('/partie-plante');
@@ -157,8 +150,10 @@ export default defineComponent({
 
     const validateAndContinue = async () => {
       try {
-        const symptomeService = new Symptome();
-        const result = await symptomeService.create(symptome);
+        const result = await symptomeModel.create({
+          description: symptome.description,
+          ID_PartiePlante: symptome.ID_PartiePlante,
+        });
 
         if (result) {
           console.log('Symptôme créé avec ID:', result);

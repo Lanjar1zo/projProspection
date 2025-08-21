@@ -23,17 +23,6 @@
             <p>Sélectionnez la date</p>
           </div>
 
-          <!-- Champ Prospecteur 
-          <div class="input-group">
-            <label>Prospecteur</label>
-            <div class="input-wrapper">
-              <ion-input
-                :value="prospection.ID_Prospecteur"
-                readonly
-              ></ion-input>
-            </div>
-          </div> -->
-
           <input type="hidden" v-model="prospection.ID_Prospecteur" />
 
           <div class="input-group">
@@ -63,7 +52,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue';
+import { defineComponent, getCurrentInstance, reactive } from 'vue';
 import { arrowBack, calendar } from 'ionicons/icons';
 import {
   IonPage,
@@ -78,7 +67,7 @@ import {
 } from '@ionic/vue';
 import { useRoute, useRouter } from 'vue-router';
 import { IProspection } from '@/Interfaces/IProspection';
-import Prospection from '@/Classes/Prospection';
+import { Prospection } from '@/Model/Prospection';
 
 export default defineComponent({
   name: 'ProspectionPage',
@@ -100,6 +89,9 @@ export default defineComponent({
       date: new Date().toISOString(),
     });
 
+    const appInstance = getCurrentInstance();
+    const prospectionModel = new Prospection(appInstance);
+
     const showToast = async (message: string, color: string = 'success') => {
       const toast = await toastController.create({
         message,
@@ -116,8 +108,10 @@ export default defineComponent({
 
     const validateAndContinue = async () => {
       try {
-        const prospectionService = new Prospection();
-        const result = await prospectionService.create(prospection);
+        const result = await prospectionModel.create({
+          ID_Prospecteur: prospection.ID_Prospecteur,
+          date: prospection.date,
+        });
 
         if (result) {
           console.log('Prospection créée avec ID:', result);

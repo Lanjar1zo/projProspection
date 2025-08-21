@@ -129,14 +129,14 @@ import {
   toastController,
   alertController,
   IonIcon,
-  IonButtons
+  IonButtons,
 } from '@ionic/vue';
 
 import { arrowBack } from 'ionicons/icons';
 import { useMutation } from '@vue/apollo-composable';
 import { PROSPECTEUR } from '@/Apollo/requetes';
 import { GestionLogin } from '@/Gestions/GestionLogin';
-import { GestionProspecteur } from '@/Gestions/GestionProspecteur';
+//import { GestionProspecteur } from '@/Gestions/GestionProspecteur';
 
 import { getCurrentInstance } from 'vue';
 import { Prospecteur } from '@/Model/Prospecteur';
@@ -154,7 +154,7 @@ export default defineComponent({
     IonInput,
     IonButton,
     IonIcon,
-    IonButtons
+    IonButtons,
   },
   setup() {
     const router = useRouter();
@@ -173,7 +173,6 @@ export default defineComponent({
 
     const { mutate: createProspecteur } = useMutation(PROSPECTEUR);
     const gestionLogin = new GestionLogin();
-    const gestionProspecteur = new GestionProspecteur();
 
     const showToast = async (message: string, color = 'success') => {
       const toast = await toastController.create({

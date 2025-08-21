@@ -71,7 +71,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted } from 'vue';
+import {
+  defineComponent,
+  ref,
+  computed,
+  onMounted,
+  getCurrentInstance,
+} from 'vue';
 import { useMutation } from '@vue/apollo-composable';
 import { Network } from '@capacitor/network';
 
@@ -112,10 +118,18 @@ import {
   SYMPTOME,
   ECHANTILLON,
 } from '@/Apollo/requetes';
-import Database from '@/Database/Database';
 import { useRouter } from 'vue-router';
 import { arrowBack } from 'ionicons/icons';
-import SQLiteService from '@/services/SQLiteService';
+
+// Importez vos classes Model
+import { Prospecteur } from '@/Model/Prospecteur';
+import { Producteur } from '@/Model/Producteur';
+import { Prospection } from '@/Model/Prospection';
+import { Champs } from '@/Model/Champs';
+import { Plante_Attaque } from '@/Model/Plante_attaque';
+import { Partie_Plante } from '@/Model/Partie_plante';
+import { Symptome } from '@/Model/Symptome';
+import { Echantillon } from '@/Model/Echantillon';
 
 interface SyncItem {
   id: number;
@@ -145,16 +159,26 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
-    const database = new Database(new SQLiteService());
     const isSyncing = ref(false);
     const connectionStatus = ref(false);
+
+    const appInstance = getCurrentInstance();
+
+    // Initialisez vos modèles
+    const prospecteurModel = new Prospecteur(appInstance);
+    const producteurModel = new Producteur(appInstance);
+    const prospectionModel = new Prospection(appInstance);
+    const champsModel = new Champs(appInstance);
+    const planteAttaqueModel = new Plante_Attaque(appInstance);
+    const partiePlanteModel = new Partie_Plante(appInstance);
+    const symptomeModel = new Symptome(appInstance);
+    const echantillonModel = new Echantillon(appInstance);
 
     const goToHome = () => {
       router.push('/accueil');
     };
 
     // Initialisation des mutations GraphQL
-    const { mutate: createProspecteur } = useMutation(PROSPECTEUR);
     const { mutate: createProspection } = useMutation(PROSPECTION);
     const { mutate: createProducteur } = useMutation(PRODUCTEUR);
     const { mutate: createChamps } = useMutation(CHAMPS);
@@ -166,55 +190,48 @@ export default defineComponent({
     const syncItems = ref<SyncItem[]>([
       {
         id: 1,
-        title: 'Prospecteurs',
-        count: 0,
-        icon: people,
-        status: 'pending',
-      },
-      {
-        id: 2,
         title: 'Producteurs',
         count: 0,
         icon: people,
         status: 'pending',
       },
       {
-        id: 3,
+        id: 2,
         title: 'Prospections',
         count: 0,
         icon: documentText,
         status: 'pending',
       },
       {
-        id: 4,
+        id: 3,
         title: 'Champs',
         count: 0,
         icon: leaf,
         status: 'pending',
       },
       {
-        id: 5,
+        id: 4,
         title: 'Plantes Attaquées',
         count: 0,
         icon: analytics,
         status: 'pending',
       },
       {
-        id: 6,
+        id: 5,
         title: 'Parties Plantes',
         count: 0,
         icon: analytics,
         status: 'pending',
       },
       {
-        id: 7,
+        id: 6,
         title: 'Symptômes',
         count: 0,
         icon: analytics,
         status: 'pending',
       },
       {
-        id: 8,
+        id: 7,
         title: 'Échantillons',
         count: 0,
         icon: checkmarkDone,
@@ -249,58 +266,25 @@ export default defineComponent({
       await toast.present();
     };
 
-    // Récupérer les données non synchronisées d'une table
-    const getUnsyncedData = async (tableName: string) => {
+    // Récupérer les données non synchronisées avec Model
+    const getUnsyncedData = async (model: any) => {
       try {
-        const query = `SELECT * FROM ${tableName} WHERE is_synced = 0`;
-        return await database.executeQuery(query);
+        const allData = await model.get();
+        return allData ? allData.filter((item: any) => item.is_Sync === 0) : [];
       } catch (error) {
-        console.error(`Error getting unsynced data from ${tableName}:`, error);
+        console.error('Error getting unsynced data:', error);
         throw error;
       }
     };
 
     // Marquer une donnée comme synchronisée
-    const markAsSynced = async (tableName: string, id: number) => {
+    const markAsSynced = async (model: any, id: number) => {
       try {
-        const idColumn = `ID_${tableName
-          .split('_')
-          .map(
-            (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-          )
-          .join('_')}`;
-
-        const query = `UPDATE ${tableName} SET is_synced = 1 WHERE ${idColumn} = ?`;
-        await database.executeUpdate(query, [id]);
+        const idColumn = `ID_${model.table}`;
+        const query = `UPDATE ${model.table} SET is_Sync = 1 WHERE ${idColumn} = ?`;
+        await model.db.run(query, [id]);
       } catch (error) {
-        console.error(`Error marking ${tableName} as synced:`, error);
-        throw error;
-      }
-    };
-
-    // Synchronisation des prospecteurs
-    const syncProspecteurs = async () => {
-      try {
-        const unsyncedData = await getUnsyncedData('Prospecteur');
-        syncItems.value[0].count = unsyncedData.length;
-
-        for (const item of unsyncedData) {
-          await createProspecteur({
-            ID_Prospecteur: item.ID_Prospecteur,
-            nomProspecteur: item.nomProspecteur,
-            prenProspecteur: item.prenProspecteur,
-            fonction: item.fonction,
-            email: item.email,
-            tel: item.tel,
-            password: item.password,
-          });
-          await markAsSynced('Prospecteur', item.ID_Prospecteur);
-          syncItems.value[0].count--;
-        }
-        syncItems.value[0].status = 'success';
-      } catch (error) {
-        console.error('Error syncing Prospecteurs:', error);
-        syncItems.value[0].status = 'error';
+        console.error('Error marking as synced:', error);
         throw error;
       }
     };
@@ -308,7 +292,7 @@ export default defineComponent({
     // Synchronisation des producteurs
     const syncProducteurs = async () => {
       try {
-        const unsyncedData = await getUnsyncedData('Producteur');
+        const unsyncedData = await getUnsyncedData(producteurModel);
         syncItems.value[1].count = unsyncedData.length;
 
         for (const item of unsyncedData) {
@@ -317,14 +301,13 @@ export default defineComponent({
             nomProd: item.nomProd,
             cin: item.cin,
             partenaire: item.partenaire,
-
             region: item.region,
             district: item.district,
             commune: item.commune,
             fokotany: item.fokotany,
-            ID_Pospecteur: item.ID_Prospecteur,
+            ID_Prospecteur: item.ID_Prospecteur,
           });
-          await markAsSynced('Producteur', item.ID_Producteur);
+          await markAsSynced(producteurModel, item.ID_Producteur);
           syncItems.value[1].count--;
         }
         syncItems.value[1].status = 'success';
@@ -338,7 +321,7 @@ export default defineComponent({
     // Synchronisation des prospections
     const syncProspections = async () => {
       try {
-        const unsyncedData = await getUnsyncedData('Prospection');
+        const unsyncedData = await getUnsyncedData(prospectionModel);
         syncItems.value[2].count = unsyncedData.length;
 
         for (const item of unsyncedData) {
@@ -347,7 +330,7 @@ export default defineComponent({
             ID_Prospecteur: item.ID_Prospecteur,
             date: item.date,
           });
-          await markAsSynced('Prospection', item.ID_Prospection);
+          await markAsSynced(prospectionModel, item.ID_Prospection);
           syncItems.value[2].count--;
         }
         syncItems.value[2].status = 'success';
@@ -361,7 +344,7 @@ export default defineComponent({
     // Synchronisation des champs
     const syncChamps = async () => {
       try {
-        const unsyncedData = await getUnsyncedData('Champs');
+        const unsyncedData = await getUnsyncedData(champsModel);
         syncItems.value[3].count = unsyncedData.length;
 
         for (const item of unsyncedData) {
@@ -380,7 +363,7 @@ export default defineComponent({
             localisation: item.localisation,
             ID_Producteur: item.ID_Producteur,
           });
-          await markAsSynced('Champs', item.ID_Champs);
+          await markAsSynced(champsModel, item.ID_Champs);
           syncItems.value[3].count--;
         }
         syncItems.value[3].status = 'success';
@@ -394,7 +377,7 @@ export default defineComponent({
     // Synchronisation des plantes attaquées
     const syncPlanteAttaque = async () => {
       try {
-        const unsyncedData = await getUnsyncedData('Plante_Attaque');
+        const unsyncedData = await getUnsyncedData(planteAttaqueModel);
         syncItems.value[4].count = unsyncedData.length;
 
         for (const item of unsyncedData) {
@@ -408,7 +391,7 @@ export default defineComponent({
             tauxInfestation: item.tauxInfestation,
             ID_Champs: item.ID_Champs,
           });
-          await markAsSynced('Plante_Attaque', item.ID_PlanteAttaque);
+          await markAsSynced(planteAttaqueModel, item.ID_PlanteAttaque);
           syncItems.value[4].count--;
         }
         syncItems.value[4].status = 'success';
@@ -422,7 +405,7 @@ export default defineComponent({
     // Synchronisation des parties plantes
     const syncPartiePlante = async () => {
       try {
-        const unsyncedData = await getUnsyncedData('Partie_Plante');
+        const unsyncedData = await getUnsyncedData(partiePlanteModel);
         syncItems.value[5].count = unsyncedData.length;
 
         for (const item of unsyncedData) {
@@ -431,7 +414,7 @@ export default defineComponent({
             partiePlante: item.partiePlante,
             ID_PlanteAttaque: item.ID_PlanteAttaque,
           });
-          await markAsSynced('Partie_Plante', item.ID_PartiePlante);
+          await markAsSynced(partiePlanteModel, item.ID_PartiePlante);
           syncItems.value[5].count--;
         }
         syncItems.value[5].status = 'success';
@@ -445,7 +428,7 @@ export default defineComponent({
     // Synchronisation des symptômes
     const syncSymptome = async () => {
       try {
-        const unsyncedData = await getUnsyncedData('Symptome');
+        const unsyncedData = await getUnsyncedData(symptomeModel);
         syncItems.value[6].count = unsyncedData.length;
 
         for (const item of unsyncedData) {
@@ -454,7 +437,7 @@ export default defineComponent({
             description: item.description,
             ID_PartiePlante: item.ID_PartiePlante,
           });
-          await markAsSynced('Symptome', item.ID_Symptome);
+          await markAsSynced(symptomeModel, item.ID_Symptome);
           syncItems.value[6].count--;
         }
         syncItems.value[6].status = 'success';
@@ -468,7 +451,7 @@ export default defineComponent({
     // Synchronisation des échantillons
     const syncEchantillon = async () => {
       try {
-        const unsyncedData = await getUnsyncedData('Echantillon');
+        const unsyncedData = await getUnsyncedData(echantillonModel);
         syncItems.value[7].count = unsyncedData.length;
 
         for (const item of unsyncedData) {
@@ -480,7 +463,7 @@ export default defineComponent({
             analyseAFaire: item.analyseAFaire,
             ID_Prospection: item.ID_Prospection,
           });
-          await markAsSynced('Echantillon', item.ID_Echantillon);
+          await markAsSynced(echantillonModel, item.ID_Echantillon);
           syncItems.value[7].count--;
         }
         syncItems.value[7].status = 'success';
@@ -507,9 +490,8 @@ export default defineComponent({
         syncItems.value.forEach((item) => (item.status = 'pending'));
 
         // Synchronise dans l'ordre des dépendances
-        await syncProspecteurs();
-        await syncProspections();
         await syncProducteurs();
+        await syncProspections();
         await syncChamps();
         await syncPlanteAttaque();
         await syncPartiePlante();
@@ -526,22 +508,72 @@ export default defineComponent({
       }
     };
 
+    //Suppression des données du local
+    /*
+    const syncAllData = async () => {
+      isSyncing.value = true;
+      const isConnected = await checkConnection();
+
+      if (!isConnected) {
+        showToast('Pas de connexion internet disponible', 'danger');
+        isSyncing.value = false;
+        return;
+      }
+
+      try {
+        // ⚠️ SUPPRIMEZ DANS L'ORDRE INVERSE DES DÉPENDANCES
+        console.log('🧹 Nettoyage des données locales...');
+
+        // 1. D'abord les tables qui ont des dépendances (les plus "enfants")
+        await echantillonModel.truncate();
+        console.log('✅ Échantillons supprimés');
+
+        await symptomeModel.truncate();
+        console.log('✅ Symptômes supprimés');
+
+        await partiePlanteModel.truncate();
+        console.log('✅ Parties plantes supprimées');
+
+        await planteAttaqueModel.truncate();
+        console.log('✅ Plantes attaquées supprimées');
+
+        await champsModel.truncate();
+        console.log('✅ Champs supprimés');
+
+        await prospectionModel.truncate();
+        console.log('✅ Prospections supprimées');
+
+        await producteurModel.truncate();
+        console.log('✅ Producteurs supprimés');
+
+        await prospecteurModel.truncate();
+        console.log('✅ Prospecteurs supprimés');
+
+        showToast('Données locales nettoyées avec succès');
+      } catch (error) {
+        console.error('Global sync error:', error);
+        showToast('Erreur lors du nettoyage', 'danger');
+      } finally {
+        isSyncing.value = false;
+        refreshData();
+      }
+    };
+*/
     // Rafraîchit les comptes de données à synchroniser
     const refreshData = async () => {
       try {
-        const tables = [
-          'Prospecteur',
-          'Producteur',
-          'Prospection',
-          'Champs',
-          'Plante_Attaque',
-          'Partie_Plante',
-          'Symptome',
-          'Echantillon',
+        const models = [
+          producteurModel,
+          prospectionModel,
+          champsModel,
+          planteAttaqueModel,
+          partiePlanteModel,
+          symptomeModel,
+          echantillonModel,
         ];
 
-        for (let i = 0; i < tables.length; i++) {
-          const data = await getUnsyncedData(tables[i]);
+        for (let i = 0; i < models.length; i++) {
+          const data = await getUnsyncedData(models[i]);
           syncItems.value[i].count = data.length;
           syncItems.value[i].status = data.length > 0 ? 'pending' : 'success';
         }
@@ -550,18 +582,9 @@ export default defineComponent({
       }
     };
 
-    // Initialisation de la base de données
-    const initDB = async () => {
-      try {
-        await refreshData();
-      } catch (error) {
-        console.error('DB init error:', error);
-      }
-    };
-
     // Montage du composant
     onMounted(() => {
-      initDB();
+      refreshData();
 
       // Écoute les changements de connexion
       Network.addListener('networkStatusChange', (status) => {
