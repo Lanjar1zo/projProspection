@@ -125,7 +125,7 @@
               </div>
             </div>
 
-            <input type="" v-model="planteAttaque.ID_Champs" />
+            <input type="hidden" v-model="planteAttaque.ID_Champs" />
           </ion-list>
 
           <!-- Bouton unique -->

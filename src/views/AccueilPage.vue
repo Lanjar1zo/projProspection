@@ -16,7 +16,7 @@
     </ion-header>
 
     <ion-content class="auth-content">
-      <input type="" id="Id_prospecteur" :value="prospecteurId" />
+      <input type="hidden" id="Id_prospecteur" :value="prospecteurId" />
 
       <div class="auth-wrapper">
         <ion-grid class="compact-grid">

@@ -293,7 +293,7 @@ export default defineComponent({
     const syncProducteurs = async () => {
       try {
         const unsyncedData = await getUnsyncedData(producteurModel);
-        syncItems.value[1].count = unsyncedData.length;
+        syncItems.value[0].count = unsyncedData.length;
 
         for (const item of unsyncedData) {
           await createProducteur({
@@ -308,12 +308,12 @@ export default defineComponent({
             ID_Prospecteur: item.ID_Prospecteur,
           });
           await markAsSynced(producteurModel, item.ID_Producteur);
-          syncItems.value[1].count--;
+          syncItems.value[0].count--;
         }
-        syncItems.value[1].status = 'success';
+        syncItems.value[0].status = 'success';
       } catch (error) {
         console.error('Error syncing Producteurs:', error);
-        syncItems.value[1].status = 'error';
+        syncItems.value[0].status = 'error';
         throw error;
       }
     };
@@ -490,8 +490,8 @@ export default defineComponent({
         syncItems.value.forEach((item) => (item.status = 'pending'));
 
         // Synchronise dans l'ordre des dépendances
+        //await syncProspections();
         await syncProducteurs();
-        await syncProspections();
         await syncChamps();
         await syncPlanteAttaque();
         await syncPartiePlante();

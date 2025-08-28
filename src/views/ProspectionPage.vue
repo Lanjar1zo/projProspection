@@ -23,7 +23,7 @@
             <p>Sélectionnez la date</p>
           </div>
 
-          <input type="hidden" v-model="prospection.ID_Prospecteur" />
+          <input type="hidden" :value="prospection.ID_Prospecteur" />
 
           <div class="input-group">
             <label>Date du prospection</label>
@@ -41,7 +41,7 @@
             expand="block"
             class="submit-btn"
             @click="validateAndContinue"
-            router-link="/producteur"
+
           >
             Suivant
           </ion-button>

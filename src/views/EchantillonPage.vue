@@ -86,7 +86,7 @@
               </div>
             </div>
 
-            <input type="" v-model="echantillon.ID_Prospection" />
+            <input type="hidden" v-model="echantillon.ID_Prospection" />
           </ion-list>
 
           <!-- Boutons d'action -->

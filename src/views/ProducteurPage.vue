@@ -109,7 +109,7 @@
             </div>
 
             <!-- Id_Prospecteur -->
-            <input type="" v-model="producteur.ID_Prospecteur" />
+            <input type="hidden" :value="producteur.ID_Prospecteur" />
           </ion-list>
 
           <!-- Bouton unique de validation et redirection -->
@@ -117,7 +117,6 @@
             expand="block"
             class="submit-btn"
             @click="validateAndContinue"
-            router-link="/champs"
           >
             Suivant
           </ion-button>

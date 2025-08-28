@@ -18,7 +18,7 @@
     <ion-content class="auth-content">
       <div class="auth-wrapper">
         <div class="form-container">
-          <input type="" v-model="symptome.ID_PartiePlante" />
+          <input type="hidden" v-model="symptome.ID_PartiePlante" />
 
           <div class="form-header">
             <h2>Symptômes observés</h2>

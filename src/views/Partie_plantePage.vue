@@ -36,7 +36,7 @@
             </ion-item>
           </ion-list>
 
-          <input type="" v-model="partiePlante.ID_PlanteAttaque" />
+          <input type="hidden" v-model="partiePlante.ID_PlanteAttaque" />
 
           <!-- Bouton unique -->
           <ion-button

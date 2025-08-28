@@ -185,7 +185,7 @@
               </div>
             </div>
 
-            <input type="" v-model="champs.ID_Producteur" />
+            <input type="hidden" v-model="champs.ID_Producteur" />
           </ion-list>
 
           <!-- Bouton unique -->

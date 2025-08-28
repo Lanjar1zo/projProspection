@@ -62,7 +62,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue';
+import { defineComponent, ref, onMounted, getCurrentInstance } from 'vue';
 import { useRouter } from 'vue-router';
 import {
   IonPage,
@@ -122,6 +122,8 @@ export default defineComponent({
     const echantillons = ref<any[]>([]);
     const searchQuery = ref<string>('');
 
+    const appInstance = getCurrentInstance();
+
     // Charger les données initiales
     onMounted(async () => {
       await loadData();
@@ -129,9 +131,9 @@ export default defineComponent({
 
     const loadData = async () => {
       try {
-        const prospectionModel = new Prospection(null);
-        const prospecteurModel = new Prospecteur(null);
-        const echantillonModel = new Echantillon(null);
+        const prospectionModel = new Prospection(appInstance);
+        const prospecteurModel = new Prospecteur(appInstance);
+        const echantillonModel = new Echantillon(appInstance);
 
         // Utilisez get() au lieu de select()
         const prospectionData = await prospectionModel.get();
